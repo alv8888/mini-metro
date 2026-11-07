@@ -34,6 +34,15 @@ Observe demand → draw or adjust routes → move passengers → detect bottlene
 - Optional original synthesized ambient audio (no Spotify dependency).
 - Responsive interface and keyboard pause control.
 
+## Current release — v0.4 — First impressions and presentation
+
+- Dedicated main menu shown before the simulation starts.
+- Original illustrated Port Azure network preview with four route colors and station markers.
+- Clear start/resume action, city overview, and short explanation of the core loop.
+- Optional ambient audio can be enabled from the start screen.
+- Simulation time does not advance behind the menu.
+- Stronger visual hierarchy in the in-game performance panel and refined responsive layouts.
+
 ## Planned systems
 
 ### v0.2 — Strategic core and visual identity
@@ -59,7 +68,7 @@ Observe demand → draw or adjust routes → move passengers → detect bottlene
 - Weather and special events.
 - Map modifiers that change strategic priorities.
 
-### v0.3 — City variety
+### v0.4 — City variety
 - Multiple maps with rivers, bridges, hills, and different station layouts.
 - Distinct district behaviors: residential, business, education, culture, health, and leisure.
 - Daily/weekly demand cycles.
