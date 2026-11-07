@@ -557,3 +557,17 @@ h1 { font-size: clamp(34px,3.3vw,46px); }
 @media (prefers-reduced-motion: reduce) {
   .route-flow, .float-signal i { animation: none !important; }
 }
+
+/* 0.4.1 — explicit route-edit and station-inspection modes */
+.map-topline { gap:14px; }
+.map-top-actions { display:flex; align-items:center; gap:13px; }
+.map-mode-button { display:inline-flex; align-items:center; gap:9px; min-width:154px; padding:7px 10px; border:1px solid #d8e1d6; border-radius:8px; background:#f8faf4; color:#355044; cursor:pointer; text-align:left; transition:background .18s ease,border-color .18s ease,transform .18s ease; }
+.map-mode-button:hover { transform:translateY(-1px); border-color:#a8c2a9; }
+.map-mode-button .mode-icon { display:grid; place-items:center; width:27px; height:27px; border-radius:7px; background:#e8efe5; color:#52755c; font-size:17px; }
+.map-mode-button b,.map-mode-button small { display:block; }
+.map-mode-button b { font-size:10px; font-weight:750; }
+.map-mode-button small { margin-top:2px; color:#87978a; font-size:8px; }
+.map-mode-button.inspect-mode { border-color:#c6d4e1; background:#f2f6fa; }
+.map-mode-button.inspect-mode .mode-icon { background:#dfeaf3; color:#547c9b; }
+#game-canvas { touch-action:manipulation; }
+@media(max-width:620px) { .map-topline { align-items:flex-start; } .map-top-actions { flex-direction:column-reverse; align-items:flex-end; gap:5px; } .map-coordinates { font-size:7px; } .map-mode-button { min-width:132px; padding:5px 7px; gap:6px; } .map-mode-button .mode-icon { width:23px; height:23px; } .map-mode-button b { font-size:9px; } .map-mode-button small { font-size:7px; } }
