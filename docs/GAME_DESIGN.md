@@ -34,12 +34,13 @@ Observe demand → draw or adjust routes → move passengers → detect bottlene
 - Optional original synthesized ambient audio (no Spotify dependency).
 - Responsive interface and keyboard pause control.
 
-## Current release — v0.5.0 — Guided first shift and staged demand
+## Current release — v0.6.0 — First-shift onboarding and coherent phase timing
 
-- Reworked the opening copy and first-shift instructions to explain the first three actions clearly.
-- Added a five-phase shift progression: morning setup, event preparation, stadium rush, return wave, and evening commute.
-- Each phase presents a short objective and a progress indicator in the city pulse panel.
-- Refined menu hierarchy, button sizing, and phase-panel responsive behavior.
+- The first shift clock stays at 08:00 until the player connects a first route.
+- The map onboarding hint now changes after the first station, clearly prompting the second connection, and reappears when an unused line is selected.
+- The city clock advances at a rate that better matches the five shift phases.
+- The stadium return phase now weights passenger trips outward from Grand Stadium instead of only changing the label.
+- Added phase-specific guidance and improved touch targets, mobile spacing, and start-screen hierarchy.
 
 ## Previous release — v0.4.1 — Safer map interaction
 
@@ -82,7 +83,7 @@ Observe demand → draw or adjust routes → move passengers → detect bottlene
 - Weather and special events.
 - Map modifiers that change strategic priorities.
 
-### v0.4 — City variety
+### Future — City variety
 - Multiple maps with rivers, bridges, hills, and different station layouts.
 - Distinct district behaviors: residential, business, education, culture, health, and leisure.
 - Daily/weekly demand cycles.
@@ -97,7 +98,7 @@ Observe demand → draw or adjust routes → move passengers → detect bottlene
 - Unlockable maps, visual themes, and vehicle styles.
 - Run history and local high scores.
 
-### v0.5 — Audio and polish
+### Future — Audio and polish
 - Original soundtrack with adaptive layers.
 - Station, vehicle, interchange, and UI sound effects.
 - Accessibility: color-safe palette, reduced motion, volume controls, clear status labels.

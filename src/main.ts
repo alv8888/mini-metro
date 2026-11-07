@@ -23,8 +23,8 @@ const SHIFT_PHASES = [
   { start: 0, end: 70, name: 'Morning setup', objective: 'Connect two districts and get the first passengers moving.' },
   { start: 70, end: 100, name: 'Event preparation', objective: 'Grand Stadium demand is approaching. Connect it before kickoff.' },
   { start: 100, end: 160, name: 'Stadium rush', objective: 'Demand is surging at the arena. Watch queues in the east.' },
-  { start: 160, end: 205, name: 'Return wave', objective: 'The event has ended. Help the crowd travel home.' },
-  { start: 205, end: 265, name: 'Evening commute', objective: 'Demand keeps rising. Add capacity and spread pressure across lines.' },
+  { start: 160, end: 205, name: 'Return wave', objective: 'The event has ended. Connect the stadium to residential districts for the journey home.' },
+  { start: 205, end: 320, name: 'Evening commute', objective: 'Afternoon traffic is building. Keep commuter routes balanced for the evening peak.' },
 ];
 const canvas = document.querySelector<HTMLCanvasElement>('#game-canvas')!;
 const ctx = canvas.getContext('2d')!;
@@ -66,6 +66,7 @@ let expressLevel = 1;
 let gameOver = false;
 let gameStarted = false;
 let routeEditMode = true;
+let hintDismissed = false;
 let soundOn = false;
 let hoveredStation: Station | null = null;
 let lastFrame = 0;
@@ -76,7 +77,7 @@ const stationById = (id: string) => stations.find((station) => station.id === id
 const totalWaiting = () => stations.reduce((sum, station) => sum + station.queue.length, 0);
 const totalOnTrains = () => lines.reduce((sum, line) => sum + line.trains.reduce((fleet, train) => fleet + train.passengers.length, 0), 0);
 const activeLines = () => lines.filter((line) => line.stations.length >= 2).length;
-const cityHour = () => Math.floor((8 * 60 + Math.floor(elapsed * 0.72)) / 60) % 24;
+const cityHour = () => Math.floor((8 * 60 + Math.floor(elapsed * 2.2)) / 60) % 24;
 const capacityCost = () => 12 + (capacityLevel - 1) * 14;
 const expressCost = () => 10 + (expressLevel - 1) * 12;
 const dispatchCost = (line: MetroLine) => 18 + Math.max(0, line.fleetSize - 1) * 16;
@@ -203,6 +204,30 @@ function rebuildRoute(line: MetroLine): void {
   updateHUD();
 }
 
+function updateStartHint(): void {
+  const hint = $('#start-hint');
+  const line = lines[selectedLine];
+  if (!line || hintDismissed || line.stations.length >= 2) {
+    hint.classList.add('hidden');
+    return;
+  }
+  hint.classList.remove('hidden');
+  const number = hint.querySelector<HTMLElement>('.hint-number');
+  const title = hint.querySelector<HTMLElement>('strong');
+  const detail = hint.querySelector<HTMLElement>('small');
+  if (!number || !title || !detail) return;
+  if (line.stations.length === 1) {
+    const firstStation = stationById(line.stations[0]!);
+    number.textContent = '02';
+    title.textContent = 'Choose a second station';
+    detail.textContent = `Connect ${firstStation.name} to another stop to start service.`;
+  } else {
+    number.textContent = '01';
+    title.textContent = selectedLine === 0 ? 'Start your first line' : `Start ${line.name}`;
+    detail.textContent = 'Choose a color, then select two stations. The clock waits for your first connection.';
+  }
+}
+
 function addStationToSelectedLine(station: Station): void {
   if (!routeEditMode) {
     focusedStation = station;
@@ -221,8 +246,7 @@ function addStationToSelectedLine(station: Station): void {
   rebuildRoute(line);
   focusedStation = station;
   updateStationInspector();
-  const hint = $('#start-hint');
-  hint.classList.add('hidden');
+  updateStartHint();
   $('#map-status').textContent = line.stations.length < 2
     ? 'SELECT ANOTHER STATION TO START SERVICE'
     : `${line.name.toUpperCase()} · ${line.stations.length} STATIONS CONNECTED`;
@@ -233,6 +257,7 @@ function undoRoute(): void {
   if (!line || !line.stations.length || gameOver) return;
   line.stations.pop();
   rebuildRoute(line);
+  updateStartHint();
   $('#map-status').textContent = line.stations.length >= 2
     ? `${line.name.toUpperCase()} · ROUTE UPDATED`
     : 'ROUTE CLEARED · SELECT A STATION';
@@ -243,6 +268,7 @@ function clearRoute(): void {
   if (!line || gameOver || !line.stations.length) return;
   line.stations = [];
   rebuildRoute(line);
+  updateStartHint();
   $('#map-status').textContent = `${line.name.toUpperCase()} · READY TO BUILD`;
 }
 
@@ -270,6 +296,7 @@ function spawnPassenger(): void {
     if (hour >= 16 && hour < 20 && choice.to.kind === 'residential') weight *= 1.8;
     if (elapsed >= 70 && elapsed < 100 && choice.to.id === 'stadium') weight *= 2.2;
     if (elapsed >= 100 && elapsed < 160 && choice.to.id === 'stadium') weight *= 5.5;
+    if (elapsed >= 160 && elapsed < 205 && choice.from.id === 'stadium') weight *= 7.5;
     return { choice, weight };
   });
   const totalWeight = weighted.reduce((sum, item) => sum + item.weight, 0);
@@ -315,7 +342,7 @@ function arriveAtStation(line: MetroLine, train: Train, station: Station): void 
 }
 
 function updateSimulation(dt: number): void {
-  if (!gameStarted || paused || gameOver) return;
+  if (!gameStarted || paused || gameOver || activeLines() === 0) return;
   elapsed += dt;
   demandClock += dt;
   const spawnInterval = Math.max(1.7, 5.2 - elapsed / 150);
@@ -373,10 +400,17 @@ function updateSimulation(dt: number): void {
     $('#event-title').textContent = 'Crowds heading home';
     $('#event-copy').textContent = 'The post-match rush is moving across town.';
     $('.event-state').textContent = 'RUSH HOUR';
+    $('#tip-text').textContent = 'Passengers are now leaving Grand Stadium. Keep a direct route toward residential districts open.';
   } else if (cityHour() >= 16) {
     $('#event-title').textContent = 'Evening commute';
     $('#event-copy').textContent = 'Commuters are heading back across the city.';
     $('.event-state').textContent = 'ACTIVE';
+    $('#tip-text').textContent = 'The evening commute is spreading across the network. Add a train or strengthen the busiest route.';
+  } else if (elapsed >= 205) {
+    $('#event-title').textContent = 'Afternoon build-up';
+    $('#event-copy').textContent = 'Commuter demand is building before the evening peak.';
+    $('.event-state').textContent = 'BUILDING';
+    $('#tip-text').textContent = 'Use this quieter window to rebalance routes before evening departures begin.';
   } else if (elapsed > 100) {
     $('#event-title').textContent = 'City getting busier';
     $('#event-copy').textContent = 'Demand is rising. Keep transfer stations moving.';
@@ -716,7 +750,7 @@ function updateHUD(): void {
   $('#credits').textContent = '$' + String(credits);
   $('.capacity-cost').textContent = capacityLevel >= 3 ? 'MAX' : '$' + String(capacityCost());
   $('.express-cost').textContent = expressLevel >= 3 ? 'MAX' : '$' + String(expressCost());
-  const minutes = 8 * 60 + Math.floor(elapsed * 0.72);
+  const minutes = 8 * 60 + Math.floor(elapsed * 2.2);
   $('#city-time').textContent = `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`;
   const connected = activeLines() > 0;
   const queueTotal = totalWaiting();
@@ -790,6 +824,7 @@ function updateStationInspector(): void {
 function selectLine(index: number): void {
   selectedLine = index;
   updateHUD();
+  updateStartHint();
   const line = lines[selectedLine];
   $('#map-status').textContent = line?.stations.length
     ? `${line.name.toUpperCase()} SELECTED · ${line.stations.length} STATIONS`
@@ -802,7 +837,7 @@ function startGame(): void {
   document.body.classList.remove('menu-active');
   $('#main-menu').classList.add('is-closed');
   $('#main-menu').setAttribute('aria-hidden', 'true');
-  $('#map-status').textContent = 'NETWORK READY · CHOOSE YOUR FIRST STATION';
+  $('#map-status').textContent = 'CLOCK ON HOLD · CONNECT TWO STATIONS TO START THE SHIFT';
   lastFrame = 0;
   updateHUD();
 }
@@ -869,6 +904,7 @@ function restartGame(): void {
     line.fleetSize = 1;
   }
   selectedLine = 0;
+  hintDismissed = false;
   focusedStation = null;
   passengerId = 1;
   trainSequence = 1;
@@ -884,7 +920,7 @@ function restartGame(): void {
   gameStarted = true;
   routeEditMode = true;
   $('#game-over').classList.add('hidden');
-  $('#start-hint').classList.remove('hidden');
+  updateStartHint();
   $('#pause-button').innerHTML = '<span>Ⅱ</span> Pause';
   $('#event-title').textContent = 'Morning commute';
   $('#event-copy').textContent = 'The city is starting its day.';
@@ -990,7 +1026,7 @@ $('#menu-sound-button').addEventListener('click', () => {
 });
 $('#help-button').addEventListener('click', () => $('#help-popover').classList.remove('hidden'));
 $('#close-help').addEventListener('click', () => $('#help-popover').classList.add('hidden'));
-$('#dismiss-hint').addEventListener('click', () => $('#start-hint').classList.add('hidden'));
+$('#dismiss-hint').addEventListener('click', () => { hintDismissed = true; $('#start-hint').classList.add('hidden'); });
 $('#restart-button').addEventListener('click', restartGame);
 $('.brand').addEventListener('click', (event) => { event.preventDefault(); openMainMenu(); });
 window.addEventListener('keydown', (event) => {
@@ -1002,5 +1038,6 @@ window.addEventListener('keydown', (event) => {
 });
 
 selectLine(0);
+updateStartHint();
 updateHUD();
 requestAnimationFrame(gameLoop);

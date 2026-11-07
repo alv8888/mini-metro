@@ -603,3 +603,65 @@ h1 { font-size: clamp(34px,3.3vw,46px); }
   .phase-panel > strong { font-size:12px; }
   .phase-panel > small { font-size:8px; }
 }
+
+
+/* CITYFLOW 0.6 — clearer onboarding, more comfortable controls and compact layouts */
+.menu-facts { gap: clamp(12px,2vw,24px); }
+.menu-facts strong { font-size:22px; }
+.menu-facts span { font-size:8px; line-height:1.45; }
+.menu-play-button { min-height:66px; }
+.menu-play-button:focus-visible, .menu-sound:focus-visible, .map-mode-button:focus-visible,
+.line-swatch:focus-visible, .text-button:focus-visible, .upgrade-card:focus-visible {
+  outline:3px solid rgba(166,201,166,.62);
+  outline-offset:3px;
+}
+.map-hint { max-width:min(390px,calc(100% - 24px)); }
+.map-hint small { max-width:290px; line-height:1.4; }
+.map-mode-button { min-height:40px; }
+.line-swatch { min-height:40px; }
+.text-button { min-height:36px; padding:5px 4px; }
+.pause-button { min-height:40px; }
+.speed-button { width:34px; height:32px; }
+.phase-panel { padding:13px 14px; }
+.phase-panel > small { font-size:10px; }
+.station-card > p { font-size:10px; line-height:1.6; }
+@media (max-width: 1180px) {
+  #app { padding-right:24px; padding-left:24px; }
+  .layout { grid-template-columns:minmax(0,1fr) 292px; gap:20px; }
+  .control-dock { flex-wrap:wrap; }
+}
+@media (max-width: 900px) {
+  .layout { grid-template-columns:minmax(0,1fr); }
+  .side-panel { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .score-card { grid-row:span 2; }
+}
+@media (max-width: 620px) {
+  #app { padding-right:10px; padding-left:10px; }
+  .menu-shell { padding-right:16px; padding-left:16px; }
+  .menu-hero { gap:24px; padding-top:29px; }
+  .menu-copy h1 { font-size:clamp(40px,11vw,56px); }
+  .menu-actions { gap:12px; }
+  .menu-play-button { width:100%; min-width:0; min-height:62px; }
+  .menu-facts { gap:9px; margin-top:24px; }
+  .menu-facts strong { font-size:18px; }
+  .menu-facts span { font-size:7px; letter-spacing:.04em; }
+  .map-topline { height:auto; min-height:42px; padding-top:5px; padding-bottom:5px; }
+  .map-footer { height:auto; min-height:38px; padding-top:6px; padding-bottom:6px; flex-wrap:wrap; gap:5px 10px; }
+  .map-legend { flex-wrap:wrap; }
+  .map-status { margin-left:auto; text-align:right; }
+  .map-hint { max-width:calc(100% - 16px); }
+  .map-hint small { max-width:220px; }
+  .line-picker { width:100%; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); }
+  .line-swatch { min-width:0; justify-content:center; min-height:38px; padding:0 5px; }
+  .dock-actions { align-self:stretch; justify-content:flex-end; }
+  .upgrade-card { min-height:60px; }
+  .phase-panel { padding:11px; }
+  .phase-panel > small { font-size:9px; }
+}
+@media (max-width: 360px) {
+  .menu-facts { gap:7px; }
+  .menu-facts > i { height:24px; }
+  .map-top-actions { gap:4px; }
+  .map-mode-button { min-width:120px; }
+  .map-status { font-size:6px; }
+}
