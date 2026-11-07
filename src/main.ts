@@ -1,4 +1,5 @@
 import './style.css';
+import { drawCityOverlay } from './visuals';
 
 type StationKind = 'residential' | 'commerce' | 'culture' | 'civic' | 'leisure';
 type Passenger = { id: number; destination: string; route: string[] };
@@ -393,73 +394,121 @@ function drawLine(line: MetroLine): void {
 }
 
 function drawStation(station: Station): void {
-  const lineCount = lines.filter((line) => line.stations.includes(station.id)).length;
+  const connectedLines = lines.filter((line) => line.stations.includes(station.id));
   const selected = lines[selectedLine]?.stations.includes(station.id) ?? false;
   const hovered = hoveredStation?.id === station.id;
-  const radius = lineCount > 1 ? 13 : 10;
+  const radius = connectedLines.length > 1 ? 13 : 10;
+  const palette: Record<StationKind, string> = {
+    residential: '#759b83', commerce: '#d09b58', culture: '#7d8fb2', civic: '#6b9e9a', leisure: '#bd8c72',
+  };
+  const accent = palette[station.kind];
 
-  if (hovered || selected) {
+  if (station.queue.length > 0 || hovered || selected) {
+    const glow = ctx.createRadialGradient(station.x, station.y, 5, station.x, station.y, 39);
+    glow.addColorStop(0, station.queue.length > 7 ? 'rgba(220,126,99,.24)' : 'rgba(255,255,255,.32)');
+    glow.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = glow;
     ctx.beginPath();
-    ctx.arc(station.x, station.y, 22, 0, Math.PI * 2);
-    ctx.fillStyle = hovered ? 'rgba(255,255,255,.72)' : 'rgba(255,255,255,.42)';
+    ctx.arc(station.x, station.y, 39, 0, Math.PI * 2);
     ctx.fill();
   }
 
+  if (hovered || selected) {
+    ctx.beginPath();
+    ctx.arc(station.x, station.y, 23, 0, Math.PI * 2);
+    ctx.fillStyle = hovered ? 'rgba(255,255,255,.8)' : 'rgba(255,255,255,.55)';
+    ctx.fill();
+    ctx.strokeStyle = selected ? accent : 'rgba(255,255,255,.9)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  }
+
+  ctx.save();
+  ctx.shadowColor = 'rgba(39,58,49,.18)';
+  ctx.shadowBlur = 9;
+  ctx.shadowOffsetY = 3;
   ctx.beginPath();
-  ctx.arc(station.x, station.y, radius + 4, 0, Math.PI * 2);
-  ctx.fillStyle = '#f7f7f2';
+  ctx.arc(station.x, station.y, radius + 5, 0, Math.PI * 2);
+  ctx.fillStyle = '#fbfbf6';
+  ctx.fill();
+  ctx.restore();
+
+  ctx.beginPath();
+  ctx.arc(station.x, station.y, radius + 1, 0, Math.PI * 2);
+  ctx.fillStyle = accent;
   ctx.fill();
   ctx.beginPath();
-  ctx.arc(station.x, station.y, radius, 0, Math.PI * 2);
-  ctx.fillStyle = station.overload > 4 ? '#d76d57' : '#344c4a';
+  ctx.arc(station.x, station.y, radius - 2, 0, Math.PI * 2);
+  ctx.fillStyle = station.overload > 4 ? '#d76d57' : '#314b42';
   ctx.fill();
 
-  ctx.fillStyle = '#f7f7f2';
-  ctx.font = 'bold 9px Inter, sans-serif';
+  ctx.fillStyle = '#fbfbf5';
+  ctx.font = '700 9px "DM Sans", sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   const symbols: Record<StationKind, string> = {
-    residential: 'H', commerce: '$', culture: '✳', civic: '+', leisure: '◇',
+    residential: '⌂', commerce: '¤', culture: '✳', civic: '+', leisure: '◇',
   };
   ctx.fillText(symbols[station.kind], station.x, station.y + 0.5);
+
+  if (connectedLines.length > 1) {
+    connectedLines.forEach((line, index) => {
+      const angle = -Math.PI / 2 + (Math.PI * 2 * index) / connectedLines.length;
+      ctx.beginPath();
+      ctx.arc(station.x, station.y, radius + 8, angle, angle + 0.65);
+      ctx.strokeStyle = line.color;
+      ctx.lineWidth = 3;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+    });
+  }
 
   if (station.queue.length > 0) {
     const visible = Math.min(station.queue.length, 8);
     for (let i = 0; i < visible; i += 1) {
       const angle = -Math.PI / 2 + (Math.PI * 2 * i) / Math.max(visible, 1);
-      const dotX = station.x + Math.cos(angle) * 22;
-      const dotY = station.y + Math.sin(angle) * 22;
+      const dotX = station.x + Math.cos(angle) * 23;
+      const dotY = station.y + Math.sin(angle) * 23;
       ctx.beginPath();
-      ctx.arc(dotX, dotY, 3.3, 0, Math.PI * 2);
-      ctx.fillStyle = '#f9f8ef';
+      ctx.arc(dotX, dotY, 4, 0, Math.PI * 2);
+      ctx.fillStyle = '#fbfbf5';
       ctx.fill();
       ctx.beginPath();
-      ctx.arc(dotX, dotY, 2, 0, Math.PI * 2);
-      ctx.fillStyle = station.queue[i]?.id ? '#425d58' : '#fff';
+      ctx.arc(dotX, dotY, 2.25, 0, Math.PI * 2);
+      ctx.fillStyle = station.queue[i]?.id ? '#d29c59' : '#fff';
       ctx.fill();
     }
   }
 
   if (station.overload > 0) {
     ctx.beginPath();
-    ctx.arc(station.x, station.y, 18, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * Math.min(station.overload / 17, 1));
+    ctx.arc(station.x, station.y, 19, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * Math.min(station.overload / 17, 1));
     ctx.strokeStyle = '#dc8069';
-    ctx.lineWidth = 3;
+    ctx.lineWidth = 3.5;
     ctx.stroke();
   }
 
   ctx.textAlign = 'left';
   ctx.textBaseline = 'alphabetic';
-  ctx.font = '600 12px Inter, sans-serif';
+  ctx.font = '600 12px "DM Sans", sans-serif';
   const labelWidth = ctx.measureText(station.name).width;
-  const labelX = station.x + 17;
-  const labelY = station.y - 15;
-  ctx.fillStyle = 'rgba(247,247,242,.86)';
+  const labelX = station.x + 19;
+  const labelY = station.y - 16;
+  ctx.save();
+  ctx.shadowColor = 'rgba(48,65,55,.08)';
+  ctx.shadowBlur = 7;
+  ctx.fillStyle = 'rgba(251,251,246,.94)';
   ctx.beginPath();
-  ctx.roundRect(labelX - 5, labelY - 12, labelWidth + 10, 19, 5);
+  ctx.roundRect(labelX - 6, labelY - 12, labelWidth + 15, 21, 6);
   ctx.fill();
-  ctx.fillStyle = '#425451';
+  ctx.restore();
+  ctx.fillStyle = '#3f554b';
   ctx.fillText(station.name, labelX, labelY + 2);
+  if (station.queue.length >= 4) {
+    ctx.fillStyle = '#bf765f';
+    ctx.font = '700 8px "DM Mono", monospace';
+    ctx.fillText(String(station.queue.length) + ' WAITING', labelX, labelY + 15);
+  }
 }
 
 function drawTrain(line: MetroLine): void {
@@ -475,28 +524,49 @@ function drawTrain(line: MetroLine): void {
   ctx.save();
   ctx.translate(x, y);
   ctx.rotate(angle);
-  ctx.shadowColor = 'rgba(30,48,45,.18)';
-  ctx.shadowBlur = 9;
-  ctx.shadowOffsetY = 3;
-  ctx.fillStyle = '#f9f8f1';
+  const halo = ctx.createRadialGradient(0, 0, 2, 0, 0, 27);
+  halo.addColorStop(0, line.color + '50');
+  halo.addColorStop(1, line.color + '00');
+  ctx.fillStyle = halo;
   ctx.beginPath();
-  ctx.roundRect(-17, -9, 34, 18, 8);
+  ctx.arc(0, 0, 27, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.shadowColor = 'rgba(31,47,39,.25)';
+  ctx.shadowBlur = 11;
+  ctx.shadowOffsetY = 4;
+  ctx.fillStyle = '#fffdf6';
+  ctx.beginPath();
+  ctx.roundRect(-20, -10, 40, 20, 8);
   ctx.fill();
   ctx.shadowColor = 'transparent';
+
   ctx.fillStyle = line.color;
   ctx.beginPath();
-  ctx.roundRect(-12, -6, 24, 12, 5);
+  ctx.roundRect(-16, -7, 32, 14, 6);
   ctx.fill();
   ctx.fillStyle = 'rgba(255,255,255,.88)';
-  ctx.fillRect(-7, -4, 5, 4);
-  ctx.fillRect(2, -4, 5, 4);
+  ctx.beginPath();
+  ctx.roundRect(-10, -4, 7, 5, 2);
+  ctx.roundRect(1, -4, 7, 5, 2);
+  ctx.fill();
+  ctx.fillStyle = '#30463d';
+  ctx.beginPath();
+  ctx.arc(13, 0, 1.7, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = '#536b5e';
+  ctx.beginPath();
+  ctx.arc(-11, 9, 2.5, 0, Math.PI * 2);
+  ctx.arc(11, 9, 2.5, 0, Math.PI * 2);
+  ctx.fill();
   ctx.restore();
 
-  for (let i = 0; i < Math.min(train.passengers.length, 5); i += 1) {
-    ctx.beginPath();
-    ctx.arc(x - 8 + i * 4, y - 16, 2, 0, Math.PI * 2);
-    ctx.fillStyle = '#405650';
-    ctx.fill();
+  if (train.passengers.length > 0) {
+    ctx.fillStyle = '#3d5549';
+    ctx.font = '700 8px "DM Mono", monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(String(train.passengers.length) + '/' + (6 * capacityLevel), x, y - 17);
   }
 }
 
@@ -511,6 +581,7 @@ function render(): void {
   }
   ctx.setTransform(width / WORLD_W, 0, 0, height / WORLD_H, 0, 0);
   drawBackground();
+  drawCityOverlay(ctx, elapsed);
   for (const line of lines) drawLine(line);
   for (const station of stations) drawStation(station);
   for (const line of lines) drawTrain(line);
