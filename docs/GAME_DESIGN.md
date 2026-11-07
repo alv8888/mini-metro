@@ -36,12 +36,20 @@ Observe demand → draw or adjust routes → move passengers → detect bottlene
 
 ## Planned systems
 
-### v0.2 — Improve the strategic core
-- Better passenger demand by district and time of day.
+### v0.2 — Strategic core and visual identity (in progress)
+- Passenger demand shifts with morning and evening commute patterns.
+- Grand Stadium event is announced before its demand spike.
+- Passenger delivery earns operating funds.
+- Capacity and express upgrades have escalating prices.
+- Detailed coastal map overlay: street hierarchy, parks, bridge, stadium, campus, harbor, airfield, and district labels.
+- Stations have distinct colors, transfer rings, queue counts, and overload indicators.
+- Trains use layered bodywork, windows, directional lights, shadows, and passenger-capacity labels.
+
+### v0.3 — Improve the strategic core
 - More than one train per line.
 - Frequency, dwell time, and capacity balancing.
 - Clearer interchange and route diagnostics.
-- Event warnings with enough lead time to react.
+- More event types with warning windows and different demand patterns.
 - Upgrade choices with explicit costs and trade-offs.
 
 ### v0.3 — City variety
