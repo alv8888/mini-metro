@@ -49,6 +49,8 @@ let passengerId = 1;
 let elapsed = 0;
 let demandClock = 0;
 let score = 0;
+let credits = 28;
+let eventPhase = 0;
 let paused = false;
 let simulationSpeed = 1;
 let capacityLevel = 1;
@@ -64,6 +66,9 @@ const stationById = (id: string) => stations.find((station) => station.id === id
 const totalWaiting = () => stations.reduce((sum, station) => sum + station.queue.length, 0);
 const totalOnTrains = () => lines.reduce((sum, line) => sum + (line.train?.passengers.length ?? 0), 0);
 const activeLines = () => lines.filter((line) => line.stations.length >= 2).length;
+const cityHour = () => Math.floor((8 * 60 + Math.floor(elapsed * 0.72)) / 60) % 24;
+const capacityCost = () => 12 + (capacityLevel - 1) * 14;
+const expressCost = () => 10 + (expressLevel - 1) * 12;
 
 function graph(): Map<string, Edge[]> {
   const result = new Map<string, Edge[]>();
@@ -187,8 +192,27 @@ function spawnPassenger(): void {
   }
   if (!connected.length) return;
   const options = connected.filter(({ from }) => from.queue.length < 10);
-  const choice = (options.length ? options : connected)[Math.floor(Math.random() * (options.length || connected.length))]!;
-  choice.from.queue.push({ id: passengerId++, destination: choice.to.id, route: choice.route });
+  const pool = options.length ? options : connected;
+  const hour = cityHour();
+  const weighted = pool.map((choice) => {
+    let weight = 1;
+    if (hour >= 7 && hour < 10 && choice.from.kind === 'residential') weight *= 2.7;
+    if (hour >= 7 && hour < 10 && ['commerce', 'culture', 'civic'].includes(choice.to.kind)) weight *= 1.7;
+    if (hour >= 11 && hour < 14 && ['commerce', 'culture', 'leisure'].includes(choice.to.kind)) weight *= 1.45;
+    if (hour >= 16 && hour < 20 && ['commerce', 'culture', 'civic'].includes(choice.from.kind)) weight *= 2.2;
+    if (hour >= 16 && hour < 20 && choice.to.kind === 'residential') weight *= 1.8;
+    if (elapsed >= 70 && elapsed < 100 && choice.to.id === 'stadium') weight *= 2.2;
+    if (elapsed >= 100 && elapsed < 160 && choice.to.id === 'stadium') weight *= 5.5;
+    return { choice, weight };
+  });
+  const totalWeight = weighted.reduce((sum, item) => sum + item.weight, 0);
+  let roll = Math.random() * totalWeight;
+  let selected = weighted[0]!.choice;
+  for (const item of weighted) {
+    roll -= item.weight;
+    if (roll <= 0) { selected = item.choice; break; }
+  }
+  selected.from.queue.push({ id: passengerId++, destination: selected.to.id, route: selected.route });
 }
 
 function boardPassengers(line: MetroLine, train: Train, station: Station): void {
@@ -209,6 +233,7 @@ function arriveAtStation(line: MetroLine, train: Train, station: Station): void 
     if (passenger.route[1] === station.id) passenger.route.shift();
     if (passenger.destination === station.id || passenger.route.length <= 1) {
       score += 1;
+      credits += 2;
       continue;
     }
     const next = nextTrainStop(line, train);
@@ -265,12 +290,33 @@ function updateSimulation(dt: number): void {
     if (station.overload >= 17) endGame(station);
   }
 
-  if (elapsed > 210 && Math.floor(elapsed / 70) % 3 === 0) {
-    $('#event-title').textContent = 'Evening return';
+  if (elapsed >= 70 && elapsed < 100) {
+    eventPhase = 1;
+    $('#event-title').textContent = 'Match starts soon';
+    $('#event-copy').textContent = 'Grand Stadium · prepare extra service.';
+    $('.event-state').textContent = 'UP NEXT';
+    $('#tip-text').textContent = 'A major event is approaching at Grand Stadium. Connect it early so passengers have time to arrive.';
+  } else if (elapsed >= 100 && elapsed < 160) {
+    eventPhase = 2;
+    $('#event-title').textContent = 'Grand Stadium event';
+    $('#event-copy').textContent = 'Passenger demand is surging near the arena.';
+    $('.event-state').textContent = 'LIVE';
+    $('#tip-text').textContent = 'The stadium is attracting extra passengers. A direct connection can reduce pressure on nearby stations.';
+  } else if (elapsed >= 160 && elapsed < 205) {
+    eventPhase = 3;
+    $('#event-title').textContent = 'Crowds heading home';
+    $('#event-copy').textContent = 'The post-match rush is moving across town.';
+    $('.event-state').textContent = 'RUSH HOUR';
+  } else if (cityHour() >= 16) {
+    eventPhase = 0;
+    $('#event-title').textContent = 'Evening commute';
     $('#event-copy').textContent = 'Commuters are heading back across the city.';
-  } else if (elapsed > 95) {
+    $('.event-state').textContent = 'ACTIVE';
+  } else if (elapsed > 100) {
+    eventPhase = 0;
     $('#event-title').textContent = 'City getting busier';
     $('#event-copy').textContent = 'Demand is rising. Keep transfer stations moving.';
+    $('.event-state').textContent = 'ACTIVE';
   }
 }
 
@@ -592,6 +638,9 @@ function updateHUD(): void {
   $('#in-transit').textContent = String(totalOnTrains());
   $('#waiting').textContent = String(totalWaiting());
   $('#active-lines').textContent = `${activeLines()} / 4`;
+  $('#credits').textContent = '$' + String(credits);
+  $('.capacity-cost').textContent = capacityLevel >= 3 ? 'MAX' : '$' + String(capacityCost());
+  $('.express-cost').textContent = expressLevel >= 3 ? 'MAX' : '$' + String(expressCost());
   const minutes = 8 * 60 + Math.floor(elapsed * 0.72);
   $('#city-time').textContent = `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`;
   const connected = activeLines() > 0;
@@ -602,8 +651,8 @@ function updateHUD(): void {
   $('#flow-note').textContent = !connected ? 'Connect stations to begin moving passengers.' : `${queueTotal} passengers are waiting across the network.`;
   $('#capacity-state').textContent = `Train capacity ×${capacityLevel}`;
   $('#express-state').textContent = `Train speed ×${expressLevel}`;
-  $('#capacity-button').classList.toggle('maxed', capacityLevel >= 3);
-  $('#speed-button').classList.toggle('maxed', expressLevel >= 3);
+  $('#capacity-button').classList.toggle('maxed', capacityLevel >= 3 || credits < capacityCost());
+  $('#speed-button').classList.toggle('maxed', expressLevel >= 3 || credits < expressCost());
   const picker = $('#line-picker');
   picker.querySelectorAll<HTMLButtonElement>('.line-swatch').forEach((button) => {
     button.classList.toggle('selected', Number(button.dataset.line) === selectedLine);
@@ -679,6 +728,8 @@ function restartGame(): void {
   elapsed = 0;
   demandClock = 0;
   score = 0;
+  credits = 28;
+  eventPhase = 0;
   paused = false;
   simulationSpeed = 1;
   capacityLevel = 1;
@@ -736,11 +787,19 @@ $('#clear-button').addEventListener('click', clearRoute);
 $('#pause-button').addEventListener('click', togglePause);
 $('#sound-button').addEventListener('click', toggleSound);
 $('#capacity-button').addEventListener('click', () => {
-  if (capacityLevel < 3) capacityLevel += 1;
+  if (capacityLevel < 3 && credits >= capacityCost()) {
+    credits -= capacityCost();
+    capacityLevel += 1;
+    $('#map-status').textContent = 'FLEET UPGRADED · MORE PASSENGER CAPACITY';
+  }
   updateHUD();
 });
 $('#speed-button').addEventListener('click', () => {
-  if (expressLevel < 3) expressLevel += 1;
+  if (expressLevel < 3 && credits >= expressCost()) {
+    credits -= expressCost();
+    expressLevel += 1;
+    $('#map-status').textContent = 'EXPRESS SERVICE INSTALLED · FASTER TRAINS';
+  }
   updateHUD();
 });
 document.querySelectorAll<HTMLButtonElement>('.speed-button').forEach((button) => {
