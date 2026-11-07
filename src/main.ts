@@ -8,11 +8,11 @@ type Station = {
   queue: Passenger[]; overload: number;
 };
 type Train = {
-  stationIndex: number; direction: 1 | -1; progress: number;
+  id: number; lastStationId: string; stationIndex: number; direction: 1 | -1; progress: number;
   dwell: number; passengers: Passenger[];
 };
 type MetroLine = {
-  id: number; name: string; color: string; stations: string[]; train: Train | null;
+  id: number; name: string; color: string; stations: string[]; trains: Train[];
 };
 type Edge = { to: string };
 
@@ -41,11 +41,13 @@ const stations: Station[] = [
 ];
 
 const lines: MetroLine[] = COLORS.map((color, index) => ({
-  id: index, name: `Line ${index + 1}`, color, stations: [], train: null,
+  id: index, name: `Line ${index + 1}`, color, stations: [], trains: [],
 }));
 
 let selectedLine = 0;
+let focusedStation: Station | null = null;
 let passengerId = 1;
+let trainSequence = 1;
 let elapsed = 0;
 let demandClock = 0;
 let score = 0;
@@ -63,11 +65,12 @@ let soundMaster: GainNode | null = null;
 
 const stationById = (id: string) => stations.find((station) => station.id === id)!;
 const totalWaiting = () => stations.reduce((sum, station) => sum + station.queue.length, 0);
-const totalOnTrains = () => lines.reduce((sum, line) => sum + (line.train?.passengers.length ?? 0), 0);
+const totalOnTrains = () => lines.reduce((sum, line) => sum + line.trains.reduce((fleet, train) => fleet + train.passengers.length, 0), 0);
 const activeLines = () => lines.filter((line) => line.stations.length >= 2).length;
 const cityHour = () => Math.floor((8 * 60 + Math.floor(elapsed * 0.72)) / 60) % 24;
 const capacityCost = () => 12 + (capacityLevel - 1) * 14;
 const expressCost = () => 10 + (expressLevel - 1) * 12;
+const dispatchCost = (line: MetroLine) => 18 + Math.max(0, line.trains.length - 1) * 16;
 
 function graph(): Map<string, Edge[]> {
   const result = new Map<string, Edge[]>();
@@ -119,17 +122,46 @@ function nextTrainStop(line: MetroLine, train: Train): Station | null {
   return id ? stationById(id) : null;
 }
 
-function resetTrain(line: MetroLine): void {
-  if (line.train) {
-    const currentId = line.stations[line.train.stationIndex];
-    if (currentId) {
-      const currentStation = stationById(currentId);
-      currentStation.queue.push(...line.train.passengers);
+function createTrain(line: MetroLine, stationIndex: number, direction: 1 | -1, dwell = 0.7): Train {
+  const stationId = line.stations[stationIndex];
+  if (!stationId) throw new Error('Cannot dispatch a train without a valid station.');
+  return {
+    id: trainSequence++,
+    lastStationId: stationId,
+    stationIndex,
+    direction,
+    progress: 0,
+    dwell,
+    passengers: [],
+  };
+}
+
+function resetFleet(line: MetroLine): void {
+  for (const train of line.trains) {
+    const returnStation = stations.find((station) => station.id === train.lastStationId);
+    returnStation?.queue.push(...train.passengers);
+  }
+  line.trains = line.stations.length >= 2 ? [createTrain(line, 0, 1)] : [];
+}
+
+function dispatchTrain(line: MetroLine): void {
+  if (line.stations.length < 2 || line.trains.length >= 3 || gameOver) return;
+  // Place the new vehicle at the route position with the most space from the existing fleet.
+  let bestIndex = line.trains.length % 2 === 1 ? line.stations.length - 1 : 0;
+  let bestSpacing = -1;
+  for (let candidate = 0; candidate < line.stations.length; candidate += 1) {
+    const spacing = line.trains.length
+      ? Math.min(...line.trains.map((train) => Math.abs(candidate - (train.stationIndex + train.direction * train.progress))))
+      : line.stations.length;
+    if (spacing > bestSpacing) {
+      bestSpacing = spacing;
+      bestIndex = candidate;
     }
   }
-  line.train = line.stations.length >= 2
-    ? { stationIndex: 0, direction: 1, progress: 0, dwell: 0.5, passengers: [] }
-    : null;
+  const direction: 1 | -1 = line.trains.length % 2 === 0 ? -1 : 1;
+  line.trains.push(createTrain(line, bestIndex, direction, 1.1));
+  $('#map-status').textContent = `${line.name.toUpperCase()} · ADDITIONAL TRAIN DISPATCHED`;
+  updateHUD();
 }
 
 function rebuildRoute(line: MetroLine): void {
@@ -139,7 +171,7 @@ function rebuildRoute(line: MetroLine): void {
     seen.add(id);
     return true;
   });
-  resetTrain(line);
+  resetFleet(line);
   updateHUD();
 }
 
@@ -153,6 +185,8 @@ function addStationToSelectedLine(station: Station): void {
     line.stations.push(station.id);
   }
   rebuildRoute(line);
+  focusedStation = station;
+  updateStationInspector();
   const hint = $('#start-hint');
   hint.classList.add('hidden');
   $('#map-status').textContent = line.stations.length < 2
@@ -258,28 +292,30 @@ function updateSimulation(dt: number): void {
   }
 
   for (const line of lines) {
-    const train = line.train;
-    if (!train || line.stations.length < 2) continue;
-    if (train.dwell > 0) {
-      train.dwell = Math.max(0, train.dwell - dt);
-      if (train.dwell === 0) {
-        const currentId = line.stations[train.stationIndex];
-        if (currentId) boardPassengers(line, train, stationById(currentId));
+    if (line.stations.length < 2) continue;
+    for (const train of line.trains) {
+      if (train.dwell > 0) {
+        train.dwell = Math.max(0, train.dwell - dt);
+        if (train.dwell === 0) {
+          const currentId = line.stations[train.stationIndex];
+          if (currentId) boardPassengers(line, train, stationById(currentId));
+        }
+        continue;
       }
-      continue;
-    }
-    const currentId = line.stations[train.stationIndex];
-    const next = nextTrainStop(line, train);
-    if (!currentId || !next) continue;
-    const current = stationById(currentId);
-    const distance = Math.hypot(next.x - current.x, next.y - current.y);
-    const travelUnitsPerSecond = 105 * expressLevel;
-    train.progress += (dt * travelUnitsPerSecond) / Math.max(1, distance);
-    if (train.progress >= 1) {
-      train.stationIndex += train.direction;
-      train.progress = 0;
-      train.dwell = 0.45;
-      arriveAtStation(line, train, next);
+      const currentId = line.stations[train.stationIndex];
+      const next = nextTrainStop(line, train);
+      if (!currentId || !next) continue;
+      const current = stationById(currentId);
+      const distance = Math.hypot(next.x - current.x, next.y - current.y);
+      const travelUnitsPerSecond = 105 * expressLevel;
+      train.progress += (dt * travelUnitsPerSecond) / Math.max(1, distance);
+      if (train.progress >= 1) {
+        train.stationIndex += train.direction;
+        train.lastStationId = next.id;
+        train.progress = 0;
+        train.dwell = 0.45;
+        arriveAtStation(line, train, next);
+      }
     }
   }
 
@@ -436,6 +472,7 @@ function drawLine(line: MetroLine): void {
 function drawStation(station: Station): void {
   const connectedLines = lines.filter((line) => line.stations.includes(station.id));
   const selected = lines[selectedLine]?.stations.includes(station.id) ?? false;
+  const focused = focusedStation?.id === station.id;
   const hovered = hoveredStation?.id === station.id;
   const radius = connectedLines.length > 1 ? 13 : 10;
   const palette: Record<StationKind, string> = {
@@ -453,13 +490,13 @@ function drawStation(station: Station): void {
     ctx.fill();
   }
 
-  if (hovered || selected) {
+  if (hovered || selected || focused) {
     ctx.beginPath();
-    ctx.arc(station.x, station.y, 23, 0, Math.PI * 2);
+    ctx.arc(station.x, station.y, focused ? 26 : 23, 0, Math.PI * 2);
     ctx.fillStyle = hovered ? 'rgba(255,255,255,.8)' : 'rgba(255,255,255,.55)';
     ctx.fill();
-    ctx.strokeStyle = selected ? accent : 'rgba(255,255,255,.9)';
-    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = focused ? '#344e42' : selected ? accent : 'rgba(255,255,255,.9)';
+    ctx.lineWidth = focused ? 2 : 1.5;
     ctx.stroke();
   }
 
@@ -551,12 +588,12 @@ function drawStation(station: Station): void {
   }
 }
 
-function drawTrain(line: MetroLine): void {
-  const train = line.train;
-  if (!train || line.stations.length < 2) return;
-  const current = stationById(line.stations[train.stationIndex]!);
+function drawTrain(line: MetroLine, train: Train): void {
+  if (line.stations.length < 2) return;
+  const currentId = line.stations[train.stationIndex];
+  const current = currentId ? stationById(currentId) : null;
   const next = nextTrainStop(line, train);
-  if (!next) return;
+  if (!current || !next) return;
   const x = current.x + (next.x - current.x) * train.progress;
   const y = current.y + (next.y - current.y) * train.progress;
   const angle = Math.atan2(next.y - current.y, next.x - current.x);
@@ -580,7 +617,6 @@ function drawTrain(line: MetroLine): void {
   ctx.roundRect(-20, -10, 40, 20, 8);
   ctx.fill();
   ctx.shadowColor = 'transparent';
-
   ctx.fillStyle = line.color;
   ctx.beginPath();
   ctx.roundRect(-16, -7, 32, 14, 6);
@@ -594,7 +630,6 @@ function drawTrain(line: MetroLine): void {
   ctx.beginPath();
   ctx.arc(13, 0, 1.7, 0, Math.PI * 2);
   ctx.fill();
-
   ctx.fillStyle = '#536b5e';
   ctx.beginPath();
   ctx.arc(-11, 9, 2.5, 0, Math.PI * 2);
@@ -624,7 +659,9 @@ function render(): void {
   drawCityOverlay(ctx, elapsed);
   for (const line of lines) drawLine(line);
   for (const station of stations) drawStation(station);
-  for (const line of lines) drawTrain(line);
+  for (const line of lines) {
+    for (const train of line.trains) drawTrain(line, train);
+  }
 }
 
 function updateHUD(): void {
@@ -632,6 +669,9 @@ function updateHUD(): void {
   $('#in-transit').textContent = String(totalOnTrains());
   $('#waiting').textContent = String(totalWaiting());
   $('#active-lines').textContent = `${activeLines()} / 4`;
+  const selectedFleet = lines[selectedLine];
+  $('#fleet-state').textContent = selectedFleet ? `Fleet · ${selectedFleet.trains.length}/3 trains` : 'Fleet · 0/3 trains';
+  $('#dispatch-cost').textContent = selectedFleet && selectedFleet.trains.length < 3 ? '$' + String(dispatchCost(selectedFleet)) : 'MAX';
   $('#credits').textContent = '$' + String(credits);
   $('.capacity-cost').textContent = capacityLevel >= 3 ? 'MAX' : '$' + String(capacityCost());
   $('.express-cost').textContent = expressLevel >= 3 ? 'MAX' : '$' + String(expressCost());
@@ -647,6 +687,8 @@ function updateHUD(): void {
   $('#express-state').textContent = `Train speed ×${expressLevel}`;
   $('#capacity-button').classList.toggle('maxed', capacityLevel >= 3 || credits < capacityCost());
   $('#speed-button').classList.toggle('maxed', expressLevel >= 3 || credits < expressCost());
+  $('#dispatch-button').classList.toggle('maxed', !selectedFleet || selectedFleet.stations.length < 2 || selectedFleet.trains.length >= 3 || credits < dispatchCost(selectedFleet));
+  updateStationInspector();
   const picker = $('#line-picker');
   picker.querySelectorAll<HTMLButtonElement>('.line-swatch').forEach((button) => {
     button.classList.toggle('selected', Number(button.dataset.line) === selectedLine);
@@ -655,6 +697,49 @@ function updateHUD(): void {
     const count = button.querySelector('span');
     if (count && line) count.textContent = String(line.stations.length).padStart(2, '0');
   });
+}
+
+function updateStationInspector(): void {
+  const station = focusedStation;
+  if (!station) {
+    $('#station-icon').textContent = '⌖';
+    $('#station-name').textContent = 'Select a station';
+    $('#station-kind').textContent = 'Station overview';
+    $('#station-queue').textContent = '—';
+    $('#station-lines').textContent = '—';
+    $('#station-pressure').textContent = 'AWAITING SELECTION';
+    $('#station-advice').textContent = 'Click any station on the map to inspect its passenger queue, serving lines, and local demand.';
+    return;
+  }
+  const labels: Record<StationKind, string> = {
+    residential: 'Residential district',
+    commerce: 'Commercial district',
+    culture: 'Culture & education',
+    civic: 'Civic services',
+    leisure: 'Leisure & events',
+  };
+  const symbols: Record<StationKind, string> = {
+    residential: '⌂', commerce: '¤', culture: '✳', civic: '+', leisure: '◇',
+  };
+  const servedBy = lines.filter((line) => line.stations.includes(station.id));
+  const pressure = station.queue >= 13 ? 'CRITICAL' : station.queue.length >= 7 ? 'BUSY' : 'STABLE';
+  $('#station-icon').textContent = symbols[station.kind];
+  $('#station-name').textContent = station.name;
+  $('#station-kind').textContent = labels[station.kind];
+  $('#station-queue').textContent = String(station.queue.length);
+  $('#station-lines').textContent = servedBy.length ? servedBy.map((line) => String(line.id + 1).padStart(2, '0')).join(' · ') : 'None';
+  $('#station-pressure').textContent = pressure;
+  $('#station-pressure').setAttribute('data-pressure', pressure.toLowerCase());
+  const advice: Record<StationKind, string> = {
+    residential: 'Residential trips concentrate around the morning departure and evening return. Make sure this district has useful connections in both directions.',
+    commerce: 'Commercial areas attract midday and afternoon trips. Short connections to residential and civic stations can ease pressure.',
+    culture: 'Education and cultural destinations create daytime demand. Interchanges can help passengers arrive from several districts.',
+    civic: 'Civic services generate steady essential journeys. Avoid leaving this station isolated from the main network.',
+    leisure: 'Leisure destinations can experience sharp event-driven demand. Build capacity before the crowd arrives.',
+  };
+  $('#station-advice').textContent = station.overload > 0
+    ? `${station.queue.length} people are waiting here. Add service or connect another route before the overload timer fills.`
+    : advice[station.kind];
 }
 
 function selectLine(index: number): void {
@@ -715,10 +800,12 @@ function restartGame(): void {
   }
   for (const line of lines) {
     line.stations = [];
-    line.train = null;
+    line.trains = [];
   }
   selectedLine = 0;
+  focusedStation = null;
   passengerId = 1;
+  trainSequence = 1;
   elapsed = 0;
   demandClock = 0;
   score = 0;
@@ -794,6 +881,14 @@ $('#speed-button').addEventListener('click', () => {
     $('#map-status').textContent = 'EXPRESS SERVICE INSTALLED · FASTER TRAINS';
   }
   updateHUD();
+});
+$('#dispatch-button').addEventListener('click', () => {
+  const line = lines[selectedLine];
+  if (!line || line.stations.length < 2 || line.trains.length >= 3) return;
+  const cost = dispatchCost(line);
+  if (credits < cost) return;
+  credits -= cost;
+  dispatchTrain(line);
 });
 document.querySelectorAll<HTMLButtonElement>('.speed-button').forEach((button) => {
   button.addEventListener('click', () => {
