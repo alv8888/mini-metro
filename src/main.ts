@@ -50,7 +50,6 @@ let elapsed = 0;
 let demandClock = 0;
 let score = 0;
 let credits = 28;
-let eventPhase = 0;
 let paused = false;
 let simulationSpeed = 1;
 let capacityLevel = 1;
@@ -291,24 +290,20 @@ function updateSimulation(dt: number): void {
   }
 
   if (elapsed >= 70 && elapsed < 100) {
-    eventPhase = 1;
     $('#event-title').textContent = 'Match starts soon';
     $('#event-copy').textContent = 'Grand Stadium · prepare extra service.';
     $('.event-state').textContent = 'UP NEXT';
     $('#tip-text').textContent = 'A major event is approaching at Grand Stadium. Connect it early so passengers have time to arrive.';
   } else if (elapsed >= 100 && elapsed < 160) {
-    eventPhase = 2;
     $('#event-title').textContent = 'Grand Stadium event';
     $('#event-copy').textContent = 'Passenger demand is surging near the arena.';
     $('.event-state').textContent = 'LIVE';
     $('#tip-text').textContent = 'The stadium is attracting extra passengers. A direct connection can reduce pressure on nearby stations.';
   } else if (elapsed >= 160 && elapsed < 205) {
-    eventPhase = 3;
     $('#event-title').textContent = 'Crowds heading home';
     $('#event-copy').textContent = 'The post-match rush is moving across town.';
     $('.event-state').textContent = 'RUSH HOUR';
   } else if (cityHour() >= 16) {
-    eventPhase = 0;
     $('#event-title').textContent = 'Evening commute';
     $('#event-copy').textContent = 'Commuters are heading back across the city.';
     $('.event-state').textContent = 'ACTIVE';
