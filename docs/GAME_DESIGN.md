@@ -34,7 +34,14 @@ Observe demand → draw or adjust routes → move passengers → detect bottlene
 - Optional original synthesized ambient audio (no Spotify dependency).
 - Responsive interface and keyboard pause control.
 
-## Current release — v0.4 — First impressions and presentation
+## Current release — v0.4.1 — Safer map interaction
+
+- Added explicit Edit route and Inspect modes to prevent accidental route edits while checking stations.
+- Inspection mode selects a station and updates the station inspector without changing any line.
+- Keyboard shortcut `I` toggles the map interaction mode.
+- Mode control has distinct visual states and responsive mobile layout.
+
+## Previous release — v0.4 — First impressions and presentation
 
 - Dedicated main menu shown before the simulation starts.
 - Original illustrated Port Azure network preview with four route colors and station markers.
