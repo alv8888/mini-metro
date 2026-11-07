@@ -36,7 +36,7 @@ Observe demand → draw or adjust routes → move passengers → detect bottlene
 
 ## Planned systems
 
-### v0.2 — Strategic core and visual identity (in progress)
+### v0.2 — Strategic core and visual identity
 - Passenger demand shifts with morning and evening commute patterns.
 - Grand Stadium event is announced before its demand spike.
 - Passenger delivery earns operating funds.
@@ -45,12 +45,19 @@ Observe demand → draw or adjust routes → move passengers → detect bottlene
 - Stations have distinct colors, transfer rings, queue counts, and overload indicators.
 - Trains use layered bodywork, windows, directional lights, shadows, and passenger-capacity labels.
 
-### v0.3 — Improve the strategic core
-- More than one train per line.
-- Frequency, dwell time, and capacity balancing.
-- Clearer interchange and route diagnostics.
-- More event types with warning windows and different demand patterns.
-- Upgrade choices with explicit costs and trade-offs.
+### v0.3 — Fleet management and station intelligence
+- Up to three trains per metro line.
+- Additional trains are purchased using operating funds, with escalating costs.
+- New vehicles are dispatched at route positions that maximize spacing from the existing fleet.
+- Station inspector shows passenger queue, connected lines, pressure, and district-specific advice.
+- Selected stations are highlighted on the map and inspected continuously as queues change.
+
+### v0.4 — City variety
+- Multiple maps with rivers, bridges, hills, and different station layouts.
+- Distinct district behaviors: residential, business, education, culture, health, and leisure.
+- Daily/weekly demand cycles.
+- Weather and special events.
+- Map modifiers that change strategic priorities.
 
 ### v0.3 — City variety
 - Multiple maps with rivers, bridges, hills, and different station layouts.
