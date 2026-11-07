@@ -99,6 +99,9 @@
             <button id="speed-button" class="upgrade-card" type="button">
               <span class="upgrade-icon">»</span><span class="upgrade-copy"><b>Express service</b><small id="express-state">Train speed ×1</small></span><span class="upgrade-cost express-cost">$10</span>
             </button>
+            <button id="dispatch-button" class="upgrade-card" type="button">
+              <span class="upgrade-icon">↔</span><span class="upgrade-copy"><b>Dispatch train</b><small id="fleet-state">Fleet · 1/3 trains</small></span><span id="dispatch-cost" class="upgrade-cost">$18</span>
+            </button>
           </section>
         </section>
 
@@ -139,11 +142,21 @@
             <p class="control-footnote">The city keeps moving while you plan. Pause to rethink a busy network.</p>
           </section>
 
-          <section class="tip-card">
-            <span class="tip-icon">✳</span>
-            <div><span class="eyebrow">DISPATCH NOTE</span><p id="tip-text">A station connected to several lines can become a powerful interchange. Keep an eye on its queue.</p></div>
+          <section class="station-card">
+            <div class="panel-head"><span class="eyebrow">STATION INSPECTOR</span><span class="station-inspector-mark">⌖</span></div>
+            <div class="station-detail-head">
+              <span id="station-icon" class="station-detail-icon">⌖</span>
+              <div><strong id="station-name">Select a station</strong><small id="station-kind">Station overview</small></div>
+            </div>
+            <div class="station-detail-grid">
+              <div><span>WAITING QUEUE</span><strong id="station-queue">—</strong></div>
+              <div><span>CONNECTED LINES</span><strong id="station-lines">—</strong></div>
+            </div>
+            <div class="station-pressure-row"><span>LOCAL PRESSURE</span><strong id="station-pressure">AWAITING SELECTION</strong></div>
+            <p id="station-advice">Click any station on the map to inspect its passenger queue, serving lines, and local demand.</p>
+            <p id="tip-text" class="station-event-note">Tip: one well-connected interchange can be more useful than three isolated lines.</p>
           </section>
-          <footer class="side-footer"><span>CITYFLOW <b>0.2.0</b></span><span>BUILT FOR CLEAR THINKING</span></footer>
+          <footer class="side-footer"><span>CITYFLOW <b>0.3.0</b></span><span>BUILT FOR CLEAR THINKING</span></footer>
         </aside>
       </main>
       <div class="bottom-credit"><span>AN ORIGINAL TRANSIT STRATEGY PROTOTYPE</span><span>PORT AZURE · EST. 2026</span></div>
