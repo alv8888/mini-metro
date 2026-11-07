@@ -31,9 +31,11 @@ npm run preview
 
 Passengers only appear between stations that are connected by the current network. Trains reverse at the ends of each line. At interchange stations, passengers can change lines when the route requires it.
 
-## Current scope
+## Current scope — v0.2
 
-This is the first playable prototype: one city map, metro lines, trains, passenger routing, station queues, escalating demand, overload conditions, speed controls, and synthesized ambient audio.
+The first playable city now includes a detailed coastal map, streets and landmarks, animated trains, route connections, passenger pathfinding and transfers, station queues, overload conditions, adaptive time-of-day passenger patterns, an announced stadium event, an operating-funds system, paid capacity/speed upgrades, simulation controls, and synthesized ambient audio.
+
+Passengers earn operating funds when delivered. Capacity and express upgrades have explicit prices, so the player must balance immediate service needs against future investment.
 
 The project deliberately starts without accounts, a backend, or external music services. The game should first prove that its core loop is fun and understandable.
 
