@@ -206,3 +206,92 @@ h1 em, .game-over h2 em { color: #6d9980; font-style: normal; }
   .side-footer { grid-column: auto; }
   .bottom-credit { font-size: 7px; }
 }
+
+
+/* CITYFLOW visual polish — soft editorial dashboard and map-first presentation */
+:root {
+  --paper: #fcfcf8;
+  --ink: #263b34;
+  --muted: #839187;
+  --line: #dce4da;
+  --green: #557d66;
+  background: #f1f2ec;
+}
+body {
+  background:
+    radial-gradient(ellipse at 14% 4%, rgba(202,219,199,.22), transparent 34%),
+    radial-gradient(ellipse at 93% 18%, rgba(213,226,220,.28), transparent 31%),
+    #f1f2ec;
+}
+#app { max-width: 1660px; }
+.topbar {
+  position: sticky; top: 0; z-index: 10;
+  background: rgba(241,242,236,.88);
+  backdrop-filter: blur(16px);
+}
+.brand { gap: 13px; }
+.brand-mark i { box-shadow: 0 2px 5px rgba(50,80,61,.12); }
+.live-indicator i { animation: city-pulse 2.4s ease-in-out infinite; }
+@keyframes city-pulse { 0%,100% { box-shadow: 0 0 0 3px #e0ebe0; } 50% { box-shadow: 0 0 0 6px rgba(224,235,224,.35); } }
+.icon-button { transition: color .18s ease, transform .18s ease; }
+.icon-button:hover { color: #385e49; transform: translateY(-1px); }
+.game-frame {
+  border-color: #d9e1d7;
+  box-shadow: 0 15px 40px rgba(45,66,51,.075), 0 2px 8px rgba(45,66,51,.035);
+}
+.canvas-wrap { isolation: isolate; }
+#game-canvas { filter: saturate(.96) contrast(1.015); }
+.map-topline, .map-footer {
+  background: linear-gradient(180deg,#fdfdf8,#f7f8f2);
+}
+.map-hint {
+  border-color: rgba(208,220,207,.95);
+  box-shadow: 0 9px 28px rgba(48,67,52,.12);
+  animation: hint-arrive .35s cubic-bezier(.2,.8,.2,1) both;
+}
+@keyframes hint-arrive { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
+.control-dock, .score-card, .traffic-card, .control-card {
+  border-color: #dce4da;
+  box-shadow: 0 7px 23px rgba(45,66,51,.035);
+  transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+}
+.control-dock:hover, .score-card:hover, .traffic-card:hover, .control-card:hover {
+  border-color: #cfdbce;
+  box-shadow: 0 11px 28px rgba(45,66,51,.055);
+}
+.line-swatch {
+  position: relative;
+  overflow: hidden;
+  transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease, background .16s ease;
+}
+.line-swatch:hover { transform: translateY(-2px); border-color: #b9cbb9; }
+.line-swatch.selected { box-shadow: 0 3px 10px rgba(80,120,91,.12), inset 0 0 0 1px rgba(106,156,129,.16); }
+.line-swatch i { height: 6px; box-shadow: 0 1px 3px rgba(30,50,35,.12); }
+.upgrade-card {
+  position: relative; overflow: hidden;
+  background: linear-gradient(135deg,rgba(255,255,252,.88),rgba(246,248,241,.8));
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.upgrade-card:hover:not(.maxed) { transform: translateY(-2px); border-color: #c8d7c7; box-shadow: 0 7px 16px rgba(49,75,54,.08); }
+.upgrade-icon { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 8px; background: #edf2e9; }
+.upgrade-cost { transition: transform .18s ease, background .18s ease; }
+.upgrade-card:hover:not(.maxed) .upgrade-cost { transform: rotate(90deg); background: #dce9da; }
+.score-main strong { text-shadow: 0 3px 18px rgba(76,113,82,.11); }
+.stat-grid strong { letter-spacing: -.035em; }
+.health-track { height: 7px; box-shadow: inset 0 1px 2px rgba(45,65,48,.06); }
+.health-track i { background: linear-gradient(90deg,#94b18c,#5f9173); box-shadow: 0 0 10px rgba(113,157,119,.22); }
+.pulse-visual { height: 95px; background: linear-gradient(135deg,#edf3eb,#f5f5ed); }
+.pulse-line { stroke-width: 2.4; filter: drop-shadow(0 2px 2px rgba(93,136,100,.13)); }
+.event-row { min-height: 43px; }
+.pause-button { transition: background .16s ease, transform .16s ease; }
+.pause-button:hover { background: #eaf1e8; transform: translateY(-1px); }
+.speed-button { transition: background .15s ease, color .15s ease; }
+.tip-card { background: linear-gradient(135deg,#f8f6eb,#f4f3e9); }
+.game-over { background: rgba(34,53,43,.34); }
+.game-over-card { box-shadow: 0 24px 70px rgba(22,42,31,.24); }
+.primary-button { box-shadow: 0 4px 12px rgba(58,96,67,.16); transition: transform .16s ease, background .16s ease; }
+.primary-button:hover { transform: translateY(-1px); }
+.bottom-credit { color: #98a59a; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
