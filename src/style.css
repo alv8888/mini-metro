@@ -571,3 +571,35 @@ h1 { font-size: clamp(34px,3.3vw,46px); }
 .map-mode-button.inspect-mode .mode-icon { background:#dfeaf3; color:#547c9b; }
 #game-canvas { touch-action:manipulation; }
 @media(max-width:620px) { .map-topline { align-items:flex-start; } .map-top-actions { flex-direction:column-reverse; align-items:flex-end; gap:5px; } .map-coordinates { font-size:7px; } .map-mode-button { min-width:132px; padding:5px 7px; gap:6px; } .map-mode-button .mode-icon { width:23px; height:23px; } .map-mode-button b { font-size:9px; } .map-mode-button small { font-size:7px; } }
+
+
+/* CITYFLOW 0.5 — clearer first shift and readable stage progression */
+.phase-panel { margin: 12px 0 10px; padding: 11px 12px; border: 1px solid #e5ebe1; border-radius: 8px; background: #f6f8f2; }
+.phase-heading { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.phase-heading .eyebrow { font-size:8px; }
+.phase-heading > span:last-child { color:#91a092; font:8px var(--mono); letter-spacing:.06em; }
+.phase-panel > strong { display:block; margin-top:8px; color:#405b4b; font:700 13px 'Manrope',sans-serif; }
+.phase-track { height:5px; margin-top:8px; overflow:hidden; border-radius:8px; background:#e4eae0; }
+.phase-track i { display:block; width:0; height:100%; border-radius:inherit; background:linear-gradient(90deg,#8eaf91,#c1cfa0); transition:width .25s linear; }
+.phase-panel > small { display:block; margin-top:7px; color:#87958a; font-size:9px; line-height:1.5; }
+.menu-feature { min-height:116px; }
+.menu-feature p { font-size:10px; line-height:1.65; }
+.menu-copy h1 { max-width:650px; }
+.menu-lead { font-size:15px; line-height:1.75; }
+.menu-play-button { min-height:62px; }
+.menu-secondary-link { padding:10px 0; }
+@media (min-width: 1500px) {
+  .menu-shell { padding-right:78px; padding-left:78px; }
+  .menu-hero { padding-top:66px; padding-bottom:58px; }
+}
+@media (max-width: 900px) {
+  .phase-panel { margin-top:10px; }
+  .menu-feature { min-height:100px; }
+}
+@media (max-width: 620px) {
+  .menu-lead { font-size:12px; line-height:1.7; }
+  .menu-facts { justify-content:space-between; }
+  .phase-panel { padding:10px; }
+  .phase-panel > strong { font-size:12px; }
+  .phase-panel > small { font-size:8px; }
+}

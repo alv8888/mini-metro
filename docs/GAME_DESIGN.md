@@ -34,7 +34,14 @@ Observe demand → draw or adjust routes → move passengers → detect bottlene
 - Optional original synthesized ambient audio (no Spotify dependency).
 - Responsive interface and keyboard pause control.
 
-## Current release — v0.4.1 — Safer map interaction
+## Current release — v0.5.0 — Guided first shift and staged demand
+
+- Reworked the opening copy and first-shift instructions to explain the first three actions clearly.
+- Added a five-phase shift progression: morning setup, event preparation, stadium rush, return wave, and evening commute.
+- Each phase presents a short objective and a progress indicator in the city pulse panel.
+- Refined menu hierarchy, button sizing, and phase-panel responsive behavior.
+
+## Previous release — v0.4.1 — Safer map interaction
 
 - Added explicit Edit route and Inspect modes to prevent accidental route edits while checking stations.
 - Inspection mode selects a station and updates the station inspector without changing any line.
@@ -68,7 +75,7 @@ Observe demand → draw or adjust routes → move passengers → detect bottlene
 - Station inspector shows passenger queue, connected lines, pressure, and district-specific advice.
 - Selected stations are highlighted on the map and inspected continuously as queues change.
 
-### v0.4 — City variety
+### Future — City variety
 - Multiple maps with rivers, bridges, hills, and different station layouts.
 - Distinct district behaviors: residential, business, education, culture, health, and leisure.
 - Daily/weekly demand cycles.
@@ -82,7 +89,7 @@ Observe demand → draw or adjust routes → move passengers → detect bottlene
 - Weather and special events.
 - Map modifiers that change strategic priorities.
 
-### v0.4 — Modes and progression
+### Future — Modes and progression
 - Endless score mode.
 - Curated campaign with objectives.
 - Daily seed challenge.

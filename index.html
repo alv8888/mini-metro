@@ -16,7 +16,7 @@
             <a class="menu-brand" href="#" aria-label="CITYFLOW home">
               <span class="brand-mark"><i></i><i></i><i></i></span>
               <span>CITYFLOW</span>
-              <span class="menu-version">0.4</span>
+              <span class="menu-version">0.5</span>
             </a>
             <div class="menu-nav-meta">
               <span class="menu-online"><i></i> PLAYABLE CITY SIMULATOR</span>
@@ -27,12 +27,12 @@
           <div class="menu-hero">
             <div class="menu-copy">
               <p class="menu-kicker"><span></span> THE CITY IS YOURS TO CONNECT</p>
-              <h1>Every route<br />changes the <em>city.</em></h1>
-              <p class="menu-lead">Design a public transport network for a city that never stands still. Connect its districts, move its people and stay one step ahead of the rush.</p>
+              <h1>Build a network.<br />Keep the <em>city moving.</em></h1>
+              <p class="menu-lead">Start with two stations, learn how demand moves, then adapt your lines as the city enters new phases. Every shift brings a different problem to solve.</p>
               <div class="menu-actions">
                 <button id="start-game" class="menu-play-button" type="button">
                   <span class="play-icon">▶</span>
-                  <span><b>Start your shift</b><small>Enter Port Azure</small></span>
+                  <span><b>Start first shift</b><small>Learn the basics in Port Azure</small></span>
                   <span class="play-arrow">↗</span>
                 </button>
                 <a class="menu-secondary-link" href="#menu-how-it-works">How the city works <span>↓</span></a>
@@ -120,14 +120,14 @@
           </div>
 
           <section id="menu-how-it-works" class="menu-bottom">
-            <div class="menu-bottom-heading"><span>THE SYSTEM</span><p>Simple to start. Hard to master.</p></div>
+            <div class="menu-bottom-heading"><span>THE SYSTEM</span><p>Your first shift, in three clear steps.</p></div>
             <div class="menu-feature-grid">
-              <article class="menu-feature"><span class="feature-number">01</span><div><b>Connect the districts</b><p>Draw metro lines between homes, markets, culture and the places people need to reach.</p></div></article>
-              <article class="menu-feature"><span class="feature-number">02</span><div><b>Read the pressure</b><p>Watch queues grow, inspect stations and spot the bottlenecks before they spread.</p></div></article>
-              <article class="menu-feature"><span class="feature-number">03</span><div><b>Adapt your network</b><p>Spend your funds on extra trains, more capacity and faster service as the city grows.</p></div></article>
+              <article class="menu-feature"><span class="feature-number">01</span><div><b>Connect the districts</b><p>Choose a color and connect two or more stations. A train starts running automatically.</p></div></article>
+              <article class="menu-feature"><span class="feature-number">02</span><div><b>Read the pressure</b><p>Passenger dots show where people are waiting. Inspect busy stations before queues become critical.</p></div></article>
+              <article class="menu-feature"><span class="feature-number">03</span><div><b>Adapt your network</b><p>Earn funds by delivering passengers. Add trains, improve capacity or speed when the network needs it.</p></div></article>
             </div>
           </section>
-          <footer class="menu-footer"><span>AN ORIGINAL TRANSIT STRATEGY GAME</span><span>PORT AZURE · BUILD 0.4.1</span></footer>
+          <footer class="menu-footer"><span>AN ORIGINAL TRANSIT STRATEGY GAME</span><span>PORT AZURE · BUILD 0.5.0</span></footer>
         </div>
       </section>
 
@@ -248,6 +248,7 @@
           <section class="traffic-card">
             <div class="panel-head"><span class="eyebrow">CITY PULSE</span><span class="pulse-time">LIVE</span></div>
             <div class="pulse-visual" aria-hidden="true"><div class="pulse-grid"></div><svg viewBox="0 0 300 78" preserveAspectRatio="none"><path class="pulse-area" d="M0 64 L18 60 L36 63 L54 43 L72 50 L90 34 L108 42 L126 29 L144 36 L162 17 L180 29 L198 22 L216 34 L234 14 L252 23 L270 11 L300 19 L300 78 L0 78Z"/><path class="pulse-line" d="M0 64 L18 60 L36 63 L54 43 L72 50 L90 34 L108 42 L126 29 L144 36 L162 17 L180 29 L198 22 L216 34 L234 14 L252 23 L270 11 L300 19"/></svg><span class="pulse-caption">Passenger demand</span></div>
+            <div class="phase-panel"><div class="phase-heading"><span class="eyebrow">SHIFT PROGRESSION</span><span id="phase-count">PHASE 01 / 05</span></div><strong id="phase-name">Morning setup</strong><div class="phase-track"><i id="phase-progress"></i></div><small id="phase-objective">Connect two districts and get the first passengers moving.</small></div>
             <div class="event-row"><span class="event-icon">◷</span><div><b id="event-title">Morning commute</b><small id="event-copy">The city is starting its day.</small></div><span class="event-state">ACTIVE</span></div>
           </section>
 
@@ -278,10 +279,10 @@
             <p id="station-advice">Click any station on the map to inspect its passenger queue, serving lines, and local demand.</p>
             <p id="tip-text" class="station-event-note">Tip: one well-connected interchange can be more useful than three isolated lines.</p>
           </section>
-          <footer class="side-footer"><span>CITYFLOW <b>0.4.1</b></span><span>BUILT FOR CLEAR THINKING</span></footer>
+          <footer class="side-footer"><span>CITYFLOW <b>0.5.0</b></span><span>BUILT FOR CLEAR THINKING</span></footer>
         </aside>
       </main>
-      <div class="bottom-credit"><span>AN ORIGINAL TRANSIT STRATEGY PROTOTYPE</span><span>PORT AZURE · BUILD 0.4.0</span></div>
+      <div class="bottom-credit"><span>AN ORIGINAL TRANSIT STRATEGY PROTOTYPE</span><span>PORT AZURE · BUILD 0.5.0</span></div>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>

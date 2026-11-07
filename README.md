@@ -35,7 +35,9 @@ In repository Settings → Pages, set the build and deployment source to **GitHu
 
 Passengers only appear between stations that are connected by the current network. Trains reverse at the ends of each line. At interchange stations, passengers can change lines when the route requires it.
 
-## Current scope — v0.4.1
+## Current scope — v0.5.0
+
+The shift now progresses through five readable phases: morning setup, event preparation, stadium rush, return wave, and evening commute. A phase tracker shows the current objective and its progress. The opening screen explains the first actions more clearly, and the interface has improved spacing and mobile readability.
 
 The map has two interaction modes: Edit route changes the selected line, while Inspect selects stations and reads live queues and connections without changing the network. The mode can also be toggled with the `I` key.
 

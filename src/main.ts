@@ -19,6 +19,13 @@ type Edge = { to: string };
 const WORLD_W = 1200;
 const WORLD_H = 760;
 const COLORS = ['#e47762', '#5d92bd', '#6a9c81', '#d5a14e'];
+const SHIFT_PHASES = [
+  { start: 0, end: 70, name: 'Morning setup', objective: 'Connect two districts and get the first passengers moving.' },
+  { start: 70, end: 100, name: 'Event preparation', objective: 'Grand Stadium demand is approaching. Connect it before kickoff.' },
+  { start: 100, end: 160, name: 'Stadium rush', objective: 'Demand is surging at the arena. Watch queues in the east.' },
+  { start: 160, end: 205, name: 'Return wave', objective: 'The event has ended. Help the crowd travel home.' },
+  { start: 205, end: 265, name: 'Evening commute', objective: 'Demand keeps rising. Add capacity and spread pressure across lines.' },
+];
 const canvas = document.querySelector<HTMLCanvasElement>('#game-canvas')!;
 const ctx = canvas.getContext('2d')!;
 const $ = <T extends HTMLElement>(selector: string) => document.querySelector<T>(selector)!;
@@ -693,6 +700,13 @@ function render(): void {
 
 function updateHUD(): void {
   $('#score').textContent = String(score).padStart(3, '0');
+  const phaseIndex = SHIFT_PHASES.findIndex((phase, index) => elapsed >= phase.start && (elapsed < phase.end || index === SHIFT_PHASES.length - 1));
+  const phase = SHIFT_PHASES[Math.max(0, phaseIndex)]!;
+  const phaseProgress = phase.end > phase.start ? Math.min(100, ((elapsed - phase.start) / (phase.end - phase.start)) * 100) : 100;
+  $('#phase-name').textContent = phase.name;
+  $('#phase-objective').textContent = phase.objective;
+  $('#phase-progress').setAttribute('style', `width:${phaseProgress}%`);
+  $('#phase-count').textContent = `PHASE ${String(Math.max(0, phaseIndex) + 1).padStart(2, '0')} / 05`;
   $('#in-transit').textContent = String(totalOnTrains());
   $('#waiting').textContent = String(totalWaiting());
   $('#active-lines').textContent = `${activeLines()} / 4`;
@@ -874,6 +888,10 @@ function restartGame(): void {
   $('#pause-button').innerHTML = '<span>Ⅱ</span> Pause';
   $('#event-title').textContent = 'Morning commute';
   $('#event-copy').textContent = 'The city is starting its day.';
+  $('#phase-name').textContent = SHIFT_PHASES[0]!.name;
+  $('#phase-objective').textContent = SHIFT_PHASES[0]!.objective;
+  $('#phase-progress').setAttribute('style', 'width:0%');
+  $('#phase-count').textContent = 'PHASE 01 / 05';
   document.querySelectorAll<HTMLButtonElement>('.speed-button').forEach((button) => button.classList.toggle('active', button.dataset.speed === '1'));
   selectLine(0);
   updateHUD();
