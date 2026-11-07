@@ -58,6 +58,7 @@ let capacityLevel = 1;
 let expressLevel = 1;
 let gameOver = false;
 let gameStarted = false;
+let routeEditMode = true;
 let soundOn = false;
 let hoveredStation: Station | null = null;
 let lastFrame = 0;
@@ -196,6 +197,12 @@ function rebuildRoute(line: MetroLine): void {
 }
 
 function addStationToSelectedLine(station: Station): void {
+  if (!routeEditMode) {
+    focusedStation = station;
+    updateStationInspector();
+    $('#map-status').textContent = `${station.name.toUpperCase()} · STATION INSPECTION`;
+    return;
+  }
   const line = lines[selectedLine];
   if (!line || gameOver) return;
   const existingIndex = line.stations.indexOf(station.id);
@@ -709,6 +716,10 @@ function updateHUD(): void {
   $('#speed-button').classList.toggle('maxed', expressLevel >= 3 || credits < expressCost());
   $('#dispatch-button').classList.toggle('maxed', !selectedFleet || selectedFleet.stations.length < 2 || selectedFleet.fleetSize >= 3 || credits < dispatchCost(selectedFleet));
   updateStationInspector();
+  const modeButton = $('#map-mode-button');
+  modeButton.classList.toggle('inspect-mode', !routeEditMode);
+  modeButton.setAttribute('aria-pressed', String(!routeEditMode));
+  modeButton.innerHTML = routeEditMode ? '<span class="mode-icon">⌁</span><span><b>Edit route</b><small>Tap stations to connect</small></span>' : '<span class="mode-icon">⌖</span><span><b>Inspect</b><small>Tap stations to view</small></span>';
   const picker = $('#line-picker');
   picker.querySelectorAll<HTMLButtonElement>('.line-swatch').forEach((button) => {
     button.classList.toggle('selected', Number(button.dataset.line) === selectedLine);
@@ -857,6 +868,7 @@ function restartGame(): void {
   expressLevel = 1;
   gameOver = false;
   gameStarted = true;
+  routeEditMode = true;
   $('#game-over').classList.add('hidden');
   $('#start-hint').classList.remove('hidden');
   $('#pause-button').innerHTML = '<span>Ⅱ</span> Pause';
@@ -900,6 +912,18 @@ canvas.addEventListener('pointerdown', (event) => {
   if (station) addStationToSelectedLine(station);
 });
 
+$('#map-mode-button').addEventListener('click', () => {
+  routeEditMode = !routeEditMode;
+  $('#map-status').textContent = routeEditMode ? 'ROUTE EDITING · SELECT STATIONS TO CONNECT' : 'INSPECTION MODE · SELECT A STATION TO VIEW';
+  updateHUD();
+});
+document.addEventListener('keydown', (event) => {
+  if (event.key.toLowerCase() === 'i' && !event.repeat && !['INPUT','TEXTAREA'].includes((event.target as HTMLElement).tagName)) {
+    routeEditMode = !routeEditMode;
+    $('#map-status').textContent = routeEditMode ? 'ROUTE EDITING · SELECT STATIONS TO CONNECT' : 'INSPECTION MODE · SELECT A STATION TO VIEW';
+    updateHUD();
+  }
+});
 $('#line-picker').addEventListener('click', (event) => {
   const target = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-line]');
   if (target) selectLine(Number(target.dataset.line));
