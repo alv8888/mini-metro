@@ -35,7 +35,11 @@ In repository Settings → Pages, set the build and deployment source to **GitHu
 
 Passengers only appear between stations that are connected by the current network. Trains reverse at the ends of each line. At interchange stations, passengers can change lines when the route requires it.
 
-## Current scope — v0.3
+## Current scope — v0.4
+
+The opening experience now has a dedicated start screen with an original illustrated city map, a clear entry into the first session, a quick explanation of the game loop, and optional ambient audio. The in-game interface has a stronger visual hierarchy and a redesigned performance panel. The simulation remains paused until the player starts or resumes a shift.
+
+## Previous scope — v0.3
 
 The first playable city now includes a detailed coastal map, streets and landmarks, animated metro vehicles, up to three trains per line, route connections, passenger pathfinding and transfers, station queues, station inspection, overload conditions, adaptive time-of-day passenger patterns, an announced stadium event, an operating-funds system, paid capacity/speed upgrades, simulation controls, and synthesized ambient audio.
 
