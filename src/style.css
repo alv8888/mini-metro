@@ -313,3 +313,51 @@ body {
   .finance-badge { flex-wrap: wrap; }
   .finance-badge small { width: 100%; }
 }
+
+/* CITYFLOW 0.3 — fleet management and station intelligence */
+.upgrade-strip { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.station-card {
+  padding: 15px 16px;
+  border: 1px solid #dce4da;
+  border-radius: 9px;
+  background: linear-gradient(145deg,#fbfcf7,#f5f7f0);
+  box-shadow: 0 7px 23px rgba(45,66,51,.035);
+}
+.station-inspector-mark { color: #77927d; font-size: 18px; }
+.station-detail-head { display: flex; align-items: center; gap: 10px; margin: 13px 0; }
+.station-detail-icon {
+  display: grid; place-items: center; width: 37px; height: 37px;
+  border: 1px solid #dce6d8; border-radius: 9px;
+  background: #edf3e9; color: #688b70; font-size: 19px;
+}
+.station-detail-head strong, .station-detail-head small { display: block; }
+.station-detail-head strong { color: #3d5548; font: 700 14px 'Manrope', sans-serif; }
+.station-detail-head small { margin-top: 3px; color: #92a094; font-size: 9px; }
+.station-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; padding: 11px 0; border-top: 1px solid #e6ebe2; border-bottom: 1px solid #e6ebe2; }
+.station-detail-grid div { display: flex; flex-direction: column; gap: 4px; }
+.station-detail-grid span, .station-pressure-row span { color: #94a095; font: 8px var(--mono); letter-spacing: .07em; }
+.station-detail-grid strong { color: #476151; font: 700 18px 'Manrope', sans-serif; font-variant-numeric: tabular-nums; }
+.station-pressure-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 11px; }
+.station-pressure-row strong { color: #7c9d7d; font: 700 8px var(--mono); letter-spacing: .07em; }
+.station-pressure-row strong[data-pressure="busy"] { color: #c18e4d; }
+.station-pressure-row strong[data-pressure="critical"] { color: #c76d59; }
+.station-card > p { color: #879489; font-size: 9px; line-height: 1.55; margin: 9px 0 0; }
+.station-card > .station-event-note { padding-top: 9px; border-top: 1px solid #e6ebe2; color: #a18f6e; }
+.upgrade-strip .upgrade-card { min-width: 0; }
+.upgrade-copy { min-width: 0; }
+.upgrade-copy b { white-space: nowrap; }
+.upgrade-cost { min-width: 30px; }
+.upgrade-card.maxed { opacity: .52; }
+@media (max-width: 1080px) {
+  .upgrade-strip { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .upgrade-card { gap: 7px; padding: 9px; }
+}
+@media (max-width: 820px) {
+  .upgrade-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .upgrade-title { grid-column: 1 / -1; }
+}
+@media (max-width: 560px) {
+  .upgrade-strip { grid-template-columns: 1fr; }
+  .upgrade-title { grid-column: auto; }
+  .station-card { padding: 13px; }
+}
