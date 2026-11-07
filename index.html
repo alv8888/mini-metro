@@ -7,13 +7,135 @@
     <meta name="description" content="CITYFLOW — a calm, challenging urban transit strategy game." />
     <title>CITYFLOW — Urban Transit Strategy</title>
   </head>
-  <body>
+  <body class="menu-active">
     <div id="app">
+
+      <section id="main-menu" class="main-menu" aria-label="CITYFLOW main menu" aria-hidden="false">
+        <div class="menu-shell">
+          <nav class="menu-nav" aria-label="Main navigation">
+            <a class="menu-brand" href="#" aria-label="CITYFLOW home">
+              <span class="brand-mark"><i></i><i></i><i></i></span>
+              <span>CITYFLOW</span>
+              <span class="menu-version">0.4</span>
+            </a>
+            <div class="menu-nav-meta">
+              <span class="menu-online"><i></i> PLAYABLE CITY SIMULATOR</span>
+              <button id="menu-sound-button" class="menu-sound" type="button" aria-label="Toggle ambient sound">♫ <span>Sound off</span></button>
+            </div>
+          </nav>
+
+          <div class="menu-hero">
+            <div class="menu-copy">
+              <p class="menu-kicker"><span></span> THE CITY IS YOURS TO CONNECT</p>
+              <h1>Every route<br />changes the <em>city.</em></h1>
+              <p class="menu-lead">Design a public transport network for a city that never stands still. Connect its districts, move its people and stay one step ahead of the rush.</p>
+              <div class="menu-actions">
+                <button id="start-game" class="menu-play-button" type="button">
+                  <span class="play-icon">▶</span>
+                  <span><b>Start your shift</b><small>Enter Port Azure</small></span>
+                  <span class="play-arrow">↗</span>
+                </button>
+                <a class="menu-secondary-link" href="#menu-how-it-works">How the city works <span>↓</span></a>
+              </div>
+              <div class="menu-facts">
+                <div><strong>14</strong><span>STATIONS</span></div>
+                <i></i>
+                <div><strong>04</strong><span>METRO LINES</span></div>
+                <i></i>
+                <div><strong>∞</strong><span>WAYS TO CONNECT</span></div>
+              </div>
+            </div>
+
+            <div class="menu-art-wrap">
+              <div class="menu-art-glow"></div>
+              <div class="menu-map-window">
+                <div class="menu-map-header">
+                  <div><span class="menu-map-overline">CITY OVERVIEW / 001</span><strong>PORT AZURE</strong></div>
+                  <span class="menu-live"><i></i> LIVE PREVIEW</span>
+                </div>
+                <svg class="menu-map-art" viewBox="0 0 720 470" role="img" aria-label="Illustrated coastal city map with four colored metro routes">
+                  <defs>
+                    <pattern id="menu-grid" width="34" height="34" patternUnits="userSpaceOnUse">
+                      <path d="M34 0H0V34" fill="none" stroke="#d7dfd5" stroke-width="1"/>
+                    </pattern>
+                    <filter id="station-shadow" x="-100%" y="-100%" width="300%" height="300%">
+                      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#456050" flood-opacity=".2"/>
+                    </filter>
+                  </defs>
+                  <rect width="720" height="470" fill="#e9eee4"/>
+                  <rect width="720" height="470" fill="url(#menu-grid)" opacity=".76"/>
+                  <path d="M535 -10 C510 72 568 116 548 189 S590 287 555 352 S561 432 612 485" fill="none" stroke="#d1e3e4" stroke-width="88"/>
+                  <path d="M535 -10 C510 72 568 116 548 189 S590 287 555 352 S561 432 612 485" fill="none" stroke="#f7faf2" stroke-width="2" stroke-dasharray="4 10" opacity=".85"/>
+                  <path d="M35 92 L210 112 L350 85 L492 106 M58 245 L215 225 L360 250 L510 226 M90 385 L260 366 L415 392 L552 365" fill="none" stroke="#cbd5ca" stroke-width="13" stroke-linecap="round"/>
+                  <path d="M35 92 L210 112 L350 85 L492 106 M58 245 L215 225 L360 250 L510 226 M90 385 L260 366 L415 392 L552 365" fill="none" stroke="#f8f9f2" stroke-width="9" stroke-linecap="round"/>
+                  <path d="M150 28 L168 160 L145 290 L190 440 M350 25 L338 145 L360 260 L340 430 M455 18 L438 150 L458 270 L445 440" fill="none" stroke="#d0d9ce" stroke-width="10" stroke-linecap="round"/>
+                  <path d="M150 28 L168 160 L145 290 L190 440 M350 25 L338 145 L360 260 L340 430 M455 18 L438 150 L458 270 L445 440" fill="none" stroke="#fafaf4" stroke-width="6" stroke-linecap="round"/>
+                  <path d="M42 42 L120 42 L120 84 L48 84Z M220 42 L292 42 L292 76 L220 76Z M248 290 L310 290 L310 345 L248 345Z M390 300 L462 300 L462 350 L390 350Z M70 300 L130 300 L130 346 L70 346Z" fill="#dce8d6" stroke="#d0decf" stroke-width="1.5"/>
+                  <path d="M58 58 L105 58 M238 58 L274 58 M266 310 L294 310 M408 320 L444 320" stroke="#b9cbb6" stroke-width="4" stroke-linecap="round"/>
+                  <g fill="#b6c9ad" opacity=".9">
+                    <circle cx="92" cy="316" r="8"/><circle cx="112" cy="332" r="6"/><circle cx="82" cy="345" r="5"/>
+                    <circle cx="273" cy="305" r="6"/><circle cx="294" cy="330" r="7"/><circle cx="432" cy="315" r="6"/>
+                  </g>
+                  <path d="M72 245 C130 228 176 215 215 225 S294 256 360 250 S438 231 510 226" fill="none" stroke="#e47762" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M150 58 C165 125 168 160 145 205 S128 312 190 385 S282 402 340 430" fill="none" stroke="#6397bf" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M210 112 C255 140 292 176 338 205 S418 238 458 270 S477 345 552 365" fill="none" stroke="#6d9c80" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M350 85 C360 143 360 190 360 250 S352 342 340 430" fill="none" stroke="#d0a04e" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+                  <g class="route-flow" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="2 15">
+                    <path d="M72 245 C130 228 176 215 215 225 S294 256 360 250 S438 231 510 226"/>
+                    <path d="M150 58 C165 125 168 160 145 205 S128 312 190 385 S282 402 340 430"/>
+                    <path d="M210 112 C255 140 292 176 338 205 S418 238 458 270 S477 345 552 365"/>
+                    <path d="M350 85 C360 143 360 190 360 250 S352 342 340 430"/>
+                  </g>
+                  <g filter="url(#station-shadow)" fill="#fbfcf7" stroke-width="5">
+                    <circle cx="72" cy="245" r="10" stroke="#e47762"/><circle cx="215" cy="225" r="10" stroke="#e47762"/>
+                    <circle cx="360" cy="250" r="12" stroke="#e47762"/><circle cx="510" cy="226" r="10" stroke="#e47762"/>
+                    <circle cx="150" cy="58" r="9" stroke="#6397bf"/><circle cx="145" cy="205" r="9" stroke="#6397bf"/>
+                    <circle cx="190" cy="385" r="9" stroke="#6397bf"/><circle cx="340" cy="430" r="9" stroke="#6397bf"/>
+                    <circle cx="210" cy="112" r="9" stroke="#6d9c80"/><circle cx="338" cy="205" r="9" stroke="#6d9c80"/>
+                    <circle cx="458" cy="270" r="9" stroke="#6d9c80"/><circle cx="552" cy="365" r="9" stroke="#6d9c80"/>
+                    <circle cx="350" cy="85" r="9" stroke="#d0a04e"/><circle cx="360" cy="250" r="9" stroke="#d0a04e"/>
+                  </g>
+                  <g fill="#758a79" font-family="DM Mono, monospace" font-size="10" letter-spacing="1.3">
+                    <text x="38" y="218">OLD HARBOR</text><text x="175" y="198">CENTRAL</text><text x="376" y="237">CROSSROADS</text>
+                    <text x="476" y="202">EASTBANK</text><text x="90" y="42">WEST</text><text x="555" y="388">HILLVIEW</text>
+                    <text x="255" y="414">SOUTH PIER</text><text x="376" y="68">CAMPUS</text>
+                  </g>
+                  <g transform="translate(422 158) rotate(18)">
+                    <rect x="-19" y="-10" width="38" height="20" rx="7" fill="#fffdf7" stroke="#4e7460" stroke-width="2"/>
+                    <rect x="-10" y="-6" width="7" height="6" rx="1.5" fill="#9bb7a2"/><rect x="2" y="-6" width="7" height="6" rx="1.5" fill="#9bb7a2"/>
+                    <circle cx="-10" cy="10" r="2.5" fill="#425c4c"/><circle cx="10" cy="10" r="2.5" fill="#425c4c"/>
+                  </g>
+                  <g transform="translate(617 76)">
+                    <circle r="24" fill="#f6f7ef" stroke="#d5dfd3"/>
+                    <path d="M0 -13 L4 0 L0 13 L-4 0Z" fill="#79927b"/>
+                    <text x="0" y="37" fill="#94a296" font-family="DM Mono,monospace" font-size="9" text-anchor="middle">N</text>
+                  </g>
+                </svg>
+                <div class="menu-map-legend">
+                  <span><i class="legend-coral"></i> LINE 01</span><span><i class="legend-blue"></i> LINE 02</span><span><i class="legend-green"></i> LINE 03</span><span><i class="legend-amber"></i> LINE 04</span>
+                </div>
+              </div>
+              <div class="map-float-card"><span class="float-icon">↗</span><span><b>A city in motion</b><small>Every connection matters.</small></span><span class="float-signal"><i></i><i></i><i></i></span></div>
+            </div>
+          </div>
+
+          <section id="menu-how-it-works" class="menu-bottom">
+            <div class="menu-bottom-heading"><span>THE SYSTEM</span><p>Simple to start. Hard to master.</p></div>
+            <div class="menu-feature-grid">
+              <article class="menu-feature"><span class="feature-number">01</span><div><b>Connect the districts</b><p>Draw metro lines between homes, markets, culture and the places people need to reach.</p></div></article>
+              <article class="menu-feature"><span class="feature-number">02</span><div><b>Read the pressure</b><p>Watch queues grow, inspect stations and spot the bottlenecks before they spread.</p></div></article>
+              <article class="menu-feature"><span class="feature-number">03</span><div><b>Adapt your network</b><p>Spend your funds on extra trains, more capacity and faster service as the city grows.</p></div></article>
+            </div>
+          </section>
+          <footer class="menu-footer"><span>AN ORIGINAL TRANSIT STRATEGY GAME</span><span>PORT AZURE · BUILD 0.4.0</span></footer>
+        </div>
+      </section>
+
       <header class="topbar">
         <a class="brand" href="#" aria-label="CITYFLOW home">
           <span class="brand-mark"><i></i><i></i><i></i></span>
           <span>CITYFLOW</span>
-          <span class="brand-edition">EARLY BUILD</span>
+          <span class="brand-edition">CITY EDITION</span>
         </a>
         <div class="topbar-right">
           <span class="live-indicator"><i></i> LIVE CITY</span>
@@ -26,7 +148,7 @@
         <section class="game-column">
           <div class="intro-row">
             <div>
-              <p class="eyebrow">URBAN NETWORK SIMULATOR <span>•</span> 01 / THE FIRST CITY</p>
+              <p class="eyebrow">URBAN NETWORK SIMULATOR <span>•</span> PORT AZURE</p>
               <h1>Make the city <em>move.</em></h1>
               <p class="subtitle">Connect places. Move people. Think one step ahead.</p>
             </div>
@@ -156,10 +278,10 @@
             <p id="station-advice">Click any station on the map to inspect its passenger queue, serving lines, and local demand.</p>
             <p id="tip-text" class="station-event-note">Tip: one well-connected interchange can be more useful than three isolated lines.</p>
           </section>
-          <footer class="side-footer"><span>CITYFLOW <b>0.3.0</b></span><span>BUILT FOR CLEAR THINKING</span></footer>
+          <footer class="side-footer"><span>CITYFLOW <b>0.4.0</b></span><span>BUILT FOR CLEAR THINKING</span></footer>
         </aside>
       </main>
-      <div class="bottom-credit"><span>AN ORIGINAL TRANSIT STRATEGY PROTOTYPE</span><span>PORT AZURE · EST. 2026</span></div>
+      <div class="bottom-credit"><span>AN ORIGINAL TRANSIT STRATEGY PROTOTYPE</span><span>PORT AZURE · BUILD 0.4.0</span></div>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
