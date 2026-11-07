@@ -173,6 +173,15 @@ function dispatchTrain(line: MetroLine): void {
   updateHUD();
 }
 
+function replanWaitingPassengers(): void {
+  const network = graph();
+  for (const station of stations) {
+    for (const passenger of station.queue) {
+      passenger.route = shortestRoute(station.id, passenger.destination, network) ?? [];
+    }
+  }
+}
+
 function rebuildRoute(line: MetroLine): void {
   const seen = new Set<string>();
   line.stations = line.stations.filter((id) => {
@@ -181,6 +190,7 @@ function rebuildRoute(line: MetroLine): void {
     return true;
   });
   resetFleet(line);
+  replanWaitingPassengers();
   updateHUD();
 }
 
