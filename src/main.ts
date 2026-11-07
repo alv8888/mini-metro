@@ -12,7 +12,7 @@ type Train = {
   dwell: number; passengers: Passenger[];
 };
 type MetroLine = {
-  id: number; name: string; color: string; stations: string[]; trains: Train[];
+  id: number; name: string; color: string; stations: string[]; trains: Train[]; fleetSize: number;
 };
 type Edge = { to: string };
 
@@ -41,7 +41,7 @@ const stations: Station[] = [
 ];
 
 const lines: MetroLine[] = COLORS.map((color, index) => ({
-  id: index, name: `Line ${index + 1}`, color, stations: [], trains: [],
+  id: index, name: `Line ${index + 1}`, color, stations: [], trains: [], fleetSize: 1,
 }));
 
 let selectedLine = 0;
@@ -70,7 +70,7 @@ const activeLines = () => lines.filter((line) => line.stations.length >= 2).leng
 const cityHour = () => Math.floor((8 * 60 + Math.floor(elapsed * 0.72)) / 60) % 24;
 const capacityCost = () => 12 + (capacityLevel - 1) * 14;
 const expressCost = () => 10 + (expressLevel - 1) * 12;
-const dispatchCost = (line: MetroLine) => 18 + Math.max(0, line.trains.length - 1) * 16;
+const dispatchCost = (line: MetroLine) => 18 + Math.max(0, line.fleetSize - 1) * 16;
 
 function graph(): Map<string, Edge[]> {
   const result = new Map<string, Edge[]>();
@@ -136,17 +136,8 @@ function createTrain(line: MetroLine, stationIndex: number, direction: 1 | -1, d
   };
 }
 
-function resetFleet(line: MetroLine): void {
-  for (const train of line.trains) {
-    const returnStation = stations.find((station) => station.id === train.lastStationId);
-    returnStation?.queue.push(...train.passengers);
-  }
-  line.trains = line.stations.length >= 2 ? [createTrain(line, 0, 1)] : [];
-}
-
-function dispatchTrain(line: MetroLine): void {
-  if (line.stations.length < 2 || line.trains.length >= 3 || gameOver) return;
-  // Place the new vehicle at the route position with the most space from the existing fleet.
+function createSpacedTrain(line: MetroLine): Train {
+  // Place each vehicle at the route position with the most space from the existing fleet.
   let bestIndex = line.trains.length % 2 === 1 ? line.stations.length - 1 : 0;
   let bestSpacing = -1;
   for (let candidate = 0; candidate < line.stations.length; candidate += 1) {
@@ -159,7 +150,25 @@ function dispatchTrain(line: MetroLine): void {
     }
   }
   const direction: 1 | -1 = line.trains.length % 2 === 0 ? -1 : 1;
-  line.trains.push(createTrain(line, bestIndex, direction, 1.1));
+  return createTrain(line, bestIndex, direction, 1.1);
+}
+
+function resetFleet(line: MetroLine): void {
+  for (const train of line.trains) {
+    const returnStation = stations.find((station) => station.id === train.lastStationId);
+    returnStation?.queue.push(...train.passengers);
+  }
+  line.trains = [];
+  if (line.stations.length >= 2) {
+    line.trains.push(createTrain(line, 0, 1));
+    while (line.trains.length < line.fleetSize) line.trains.push(createSpacedTrain(line));
+  }
+}
+
+function dispatchTrain(line: MetroLine): void {
+  if (line.stations.length < 2 || line.fleetSize >= 3 || gameOver) return;
+  line.trains.push(createSpacedTrain(line));
+  line.fleetSize += 1;
   $('#map-status').textContent = `${line.name.toUpperCase()} · ADDITIONAL TRAIN DISPATCHED`;
   updateHUD();
 }
@@ -670,8 +679,8 @@ function updateHUD(): void {
   $('#waiting').textContent = String(totalWaiting());
   $('#active-lines').textContent = `${activeLines()} / 4`;
   const selectedFleet = lines[selectedLine];
-  $('#fleet-state').textContent = selectedFleet ? `Fleet · ${selectedFleet.trains.length}/3 trains` : 'Fleet · 0/3 trains';
-  $('#dispatch-cost').textContent = selectedFleet && selectedFleet.trains.length < 3 ? '$' + String(dispatchCost(selectedFleet)) : 'MAX';
+  $('#fleet-state').textContent = selectedFleet ? `Fleet · ${selectedFleet.fleetSize}/3 trains` : 'Fleet · 0/3 trains';
+  $('#dispatch-cost').textContent = selectedFleet && selectedFleet.fleetSize < 3 ? '$' + String(dispatchCost(selectedFleet)) : 'MAX';
   $('#credits').textContent = '$' + String(credits);
   $('.capacity-cost').textContent = capacityLevel >= 3 ? 'MAX' : '$' + String(capacityCost());
   $('.express-cost').textContent = expressLevel >= 3 ? 'MAX' : '$' + String(expressCost());
@@ -687,7 +696,7 @@ function updateHUD(): void {
   $('#express-state').textContent = `Train speed ×${expressLevel}`;
   $('#capacity-button').classList.toggle('maxed', capacityLevel >= 3 || credits < capacityCost());
   $('#speed-button').classList.toggle('maxed', expressLevel >= 3 || credits < expressCost());
-  $('#dispatch-button').classList.toggle('maxed', !selectedFleet || selectedFleet.stations.length < 2 || selectedFleet.trains.length >= 3 || credits < dispatchCost(selectedFleet));
+  $('#dispatch-button').classList.toggle('maxed', !selectedFleet || selectedFleet.stations.length < 2 || selectedFleet.fleetSize >= 3 || credits < dispatchCost(selectedFleet));
   updateStationInspector();
   const picker = $('#line-picker');
   picker.querySelectorAll<HTMLButtonElement>('.line-swatch').forEach((button) => {
@@ -801,6 +810,7 @@ function restartGame(): void {
   for (const line of lines) {
     line.stations = [];
     line.trains = [];
+    line.fleetSize = 1;
   }
   selectedLine = 0;
   focusedStation = null;
@@ -884,7 +894,7 @@ $('#speed-button').addEventListener('click', () => {
 });
 $('#dispatch-button').addEventListener('click', () => {
   const line = lines[selectedLine];
-  if (!line || line.stations.length < 2 || line.trains.length >= 3) return;
+  if (!line || line.stations.length < 2 || line.fleetSize >= 3) return;
   const cost = dispatchCost(line);
   if (credits < cost) return;
   credits -= cost;
