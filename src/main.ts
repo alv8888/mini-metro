@@ -57,6 +57,7 @@ let simulationSpeed = 1;
 let capacityLevel = 1;
 let expressLevel = 1;
 let gameOver = false;
+let gameStarted = false;
 let soundOn = false;
 let hoveredStation: Station | null = null;
 let lastFrame = 0;
@@ -300,7 +301,7 @@ function arriveAtStation(line: MetroLine, train: Train, station: Station): void 
 }
 
 function updateSimulation(dt: number): void {
-  if (paused || gameOver) return;
+  if (!gameStarted || paused || gameOver) return;
   elapsed += dt;
   demandClock += dt;
   const spawnInterval = Math.max(1.7, 5.2 - elapsed / 150);
@@ -770,6 +771,26 @@ function selectLine(index: number): void {
     : `${line?.name.toUpperCase()} SELECTED · CHOOSE YOUR FIRST STATION`;
 }
 
+function startGame(): void {
+  gameStarted = true;
+  paused = false;
+  document.body.classList.remove('menu-active');
+  $('#main-menu').classList.add('is-closed');
+  $('#main-menu').setAttribute('aria-hidden', 'true');
+  $('#map-status').textContent = 'NETWORK READY · CHOOSE YOUR FIRST STATION';
+  lastFrame = 0;
+  updateHUD();
+}
+
+function openMainMenu(): void {
+  if (!gameStarted) return;
+  paused = true;
+  document.body.classList.add('menu-active');
+  $('#main-menu').classList.remove('is-closed');
+  $('#main-menu').setAttribute('aria-hidden', 'false');
+  $('#start-game').querySelector('b')!.textContent = 'Resume your shift';
+}
+
 function togglePause(): void {
   if (gameOver) return;
   paused = !paused;
@@ -835,6 +856,7 @@ function restartGame(): void {
   capacityLevel = 1;
   expressLevel = 1;
   gameOver = false;
+  gameStarted = true;
   $('#game-over').classList.add('hidden');
   $('#start-hint').classList.remove('hidden');
   $('#pause-button').innerHTML = '<span>Ⅱ</span> Pause';
@@ -916,10 +938,19 @@ document.querySelectorAll<HTMLButtonElement>('.speed-button').forEach((button) =
     document.querySelectorAll('.speed-button').forEach((item) => item.classList.toggle('active', item === button));
   });
 });
+$('#start-game').addEventListener('click', () => {
+  startGame();
+  $('#start-game').querySelector('b')!.textContent = 'Resume your shift';
+});
+$('#menu-sound-button').addEventListener('click', () => {
+  toggleSound();
+  $('#menu-sound-button').innerHTML = soundOn ? '♫ <span>Sound on</span>' : '♫ <span>Sound off</span>';
+});
 $('#help-button').addEventListener('click', () => $('#help-popover').classList.remove('hidden'));
 $('#close-help').addEventListener('click', () => $('#help-popover').classList.add('hidden'));
 $('#dismiss-hint').addEventListener('click', () => $('#start-hint').classList.add('hidden'));
 $('#restart-button').addEventListener('click', restartGame);
+$('.brand').addEventListener('click', (event) => { event.preventDefault(); openMainMenu(); });
 window.addEventListener('keydown', (event) => {
   if (event.code === 'Space' && !(event.target instanceof HTMLButtonElement)) {
     event.preventDefault();
