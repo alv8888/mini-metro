@@ -308,7 +308,6 @@ function updateSimulation(dt: number): void {
     $('#event-copy').textContent = 'Commuters are heading back across the city.';
     $('.event-state').textContent = 'ACTIVE';
   } else if (elapsed > 100) {
-    eventPhase = 0;
     $('#event-title').textContent = 'City getting busier';
     $('#event-copy').textContent = 'Demand is rising. Keep transfer stations moving.';
     $('.event-state').textContent = 'ACTIVE';
@@ -724,7 +723,6 @@ function restartGame(): void {
   demandClock = 0;
   score = 0;
   credits = 28;
-  eventPhase = 0;
   paused = false;
   simulationSpeed = 1;
   capacityLevel = 1;
