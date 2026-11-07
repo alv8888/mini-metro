@@ -722,7 +722,7 @@ function updateStationInspector(): void {
     residential: '⌂', commerce: '¤', culture: '✳', civic: '+', leisure: '◇',
   };
   const servedBy = lines.filter((line) => line.stations.includes(station.id));
-  const pressure = station.queue >= 13 ? 'CRITICAL' : station.queue.length >= 7 ? 'BUSY' : 'STABLE';
+  const pressure = station.queue.length >= 13 ? 'CRITICAL' : station.queue.length >= 7 ? 'BUSY' : 'STABLE';
   $('#station-icon').textContent = symbols[station.kind];
   $('#station-name').textContent = station.name;
   $('#station-kind').textContent = labels[station.kind];
