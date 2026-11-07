@@ -35,7 +35,11 @@ In repository Settings → Pages, set the build and deployment source to **GitHu
 
 Passengers only appear between stations that are connected by the current network. Trains reverse at the ends of each line. At interchange stations, passengers can change lines when the route requires it.
 
-## Current scope — v0.4
+## Current scope — v0.4.1
+
+The map has two interaction modes: Edit route changes the selected line, while Inspect selects stations and reads live queues and connections without changing the network. The mode can also be toggled with the `I` key.
+
+## Previous scope — v0.4
 
 The opening experience now has a dedicated start screen with an original illustrated city map, a clear entry into the first session, a quick explanation of the game loop, and optional ambient audio. The in-game interface has a stronger visual hierarchy and a redesigned performance panel. The simulation remains paused until the player starts or resumes a shift.
 
