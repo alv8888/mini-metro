@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f3f2ed" />
+    <meta name="description" content="CITYFLOW — a calm, challenging urban transit strategy game." />
+    <title>CITYFLOW — Urban Transit Strategy</title>
+  </head>
+  <body>
+    <div id="app">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="CITYFLOW home">
+          <span class="brand-mark"><i></i><i></i><i></i></span>
+          <span>CITYFLOW</span>
+          <span class="brand-edition">EARLY BUILD</span>
+        </a>
+        <div class="topbar-right">
+          <span class="live-indicator"><i></i> LIVE CITY</span>
+          <button id="sound-button" class="icon-button" type="button" title="Toggle ambient audio" aria-label="Toggle ambient audio">♫ <span>Sound off</span></button>
+          <button id="help-button" class="icon-button" type="button" title="How to play" aria-label="How to play">? <span>How to play</span></button>
+        </div>
+      </header>
+
+      <main class="layout">
+        <section class="game-column">
+          <div class="intro-row">
+            <div>
+              <p class="eyebrow">URBAN NETWORK SIMULATOR <span>•</span> 01 / THE FIRST CITY</p>
+              <h1>Make the city <em>move.</em></h1>
+              <p class="subtitle">Connect places. Move people. Think one step ahead.</p>
+            </div>
+            <div class="city-tag"><span class="sun-icon">◒</span><span>PORT AZURE</span><small>Temperate · Coastal</small></div>
+          </div>
+
+          <section class="game-frame" aria-label="CITYFLOW game">
+            <div class="map-topline">
+              <div><span class="map-live-dot"></span> NETWORK MAP <span class="map-separator">/</span> PORT AZURE</div>
+              <div class="map-coordinates">35° 41' N&nbsp;&nbsp; 139° 41' E</div>
+            </div>
+            <div class="canvas-wrap">
+              <canvas id="game-canvas" aria-label="Interactive city map. Select a line, then click stations to connect them."></canvas>
+              <div id="start-hint" class="map-hint">
+                <span class="hint-number">01</span>
+                <span><strong>Start your first line</strong><small>Choose a color, then click 2 or more stations.</small></span>
+                <button id="dismiss-hint" type="button" aria-label="Dismiss hint">×</button>
+              </div>
+              <div id="game-over" class="game-over hidden">
+                <div class="game-over-card">
+                  <span class="eyebrow">CITYFLOW · SHIFT REPORT</span>
+                  <h2>The network<br/><em>needs a rethink.</em></h2>
+                  <p id="game-over-copy">The city became too crowded to keep moving.</p>
+                  <div class="final-score"><span>PASSENGERS DELIVERED</span><strong id="final-score">0</strong></div>
+                  <button id="restart-button" class="primary-button" type="button">Start a new city <span>↗</span></button>
+                </div>
+              </div>
+              <div id="help-popover" class="help-popover hidden">
+                <button id="close-help" type="button" aria-label="Close help">×</button>
+                <span class="eyebrow">QUICK FIELD GUIDE</span>
+                <h3>Build a network that works.</h3>
+                <ol>
+                  <li><b>Choose a line color</b> from the control dock.</li>
+                  <li><b>Click stations</b> in the order you want trains to visit them.</li>
+                  <li><b>Connect at least two stations.</b> A train will start running automatically.</li>
+                  <li><b>Watch passenger dots.</b> They show where people are waiting.</li>
+                  <li><b>Connect busy places</b> and avoid letting one station become overloaded.</li>
+                </ol>
+                <p>Tip: one well-connected interchange can be more useful than three isolated lines.</p>
+              </div>
+            </div>
+
+            <div class="map-footer">
+              <div class="map-legend"><span><i class="legend-station"></i> Station</span><span><i class="legend-passenger"></i> Waiting passenger</span><span><i class="legend-train"></i> Train</span></div>
+              <div id="map-status" class="map-status">AWAITING FIRST CONNECTION</div>
+            </div>
+          </section>
+
+          <section class="control-dock">
+            <div class="dock-main">
+              <div class="dock-heading"><span class="eyebrow">YOUR LINES</span><span class="dock-note">Select a line to edit its route</span></div>
+              <div id="line-picker" class="line-picker" aria-label="Metro line selection">
+                <button class="line-swatch selected" data-line="0" type="button" aria-label="Select coral line" title="Coral line"><i style="--swatch:#e47762"></i><span>01</span></button>
+                <button class="line-swatch" data-line="1" type="button" aria-label="Select blue line" title="Blue line"><i style="--swatch:#5d92bd"></i><span>02</span></button>
+                <button class="line-swatch" data-line="2" type="button" aria-label="Select green line" title="Green line"><i style="--swatch:#6a9c81"></i><span>03</span></button>
+                <button class="line-swatch" data-line="3" type="button" aria-label="Select amber line" title="Amber line"><i style="--swatch:#d5a14e"></i><span>04</span></button>
+              </div>
+            </div>
+            <div class="dock-actions">
+              <button id="undo-button" class="text-button" type="button">↶ <span>Undo</span></button>
+              <button id="clear-button" class="text-button" type="button">× <span>Clear line</span></button>
+            </div>
+          </section>
+
+          <section class="upgrade-strip">
+            <div class="upgrade-title"><span class="eyebrow">NETWORK TOOLS</span><span class="coming-label">PROTOTYPE</span></div>
+            <button id="capacity-button" class="upgrade-card" type="button">
+              <span class="upgrade-icon">▥</span><span class="upgrade-copy"><b>Extra capacity</b><small id="capacity-state">Train capacity ×1</small></span><span class="upgrade-cost">+</span>
+            </button>
+            <button id="speed-button" class="upgrade-card" type="button">
+              <span class="upgrade-icon">»</span><span class="upgrade-copy"><b>Express service</b><small id="express-state">Train speed ×1</small></span><span class="upgrade-cost">+</span>
+            </button>
+          </section>
+        </section>
+
+        <aside class="side-panel">
+          <section class="score-card">
+            <div class="panel-head"><span class="eyebrow">CITY PERFORMANCE</span><span class="status-pill"><i></i> OPERATING</span></div>
+            <div class="score-main"><span>PEOPLE DELIVERED</span><strong id="score">000</strong><small>passengers this session</small></div>
+            <div class="stat-grid">
+              <div><span>IN TRANSIT</span><strong id="in-transit">0</strong></div>
+              <div><span>WAITING</span><strong id="waiting">0</strong></div>
+              <div><span>ACTIVE LINES</span><strong id="active-lines">0 / 4</strong></div>
+              <div><span>CITY TIME</span><strong id="city-time">08:00</strong></div>
+            </div>
+            <div class="health-block">
+              <div class="health-label"><span>NETWORK FLOW</span><strong id="flow-label">Waiting for service</strong></div>
+              <div class="health-track"><i id="flow-bar"></i></div>
+              <small id="flow-note">Connect stations to begin moving passengers.</small>
+            </div>
+          </section>
+
+          <section class="traffic-card">
+            <div class="panel-head"><span class="eyebrow">CITY PULSE</span><span class="pulse-time">LIVE</span></div>
+            <div class="pulse-visual" aria-hidden="true"><div class="pulse-grid"></div><svg viewBox="0 0 300 78" preserveAspectRatio="none"><path class="pulse-area" d="M0 64 L18 60 L36 63 L54 43 L72 50 L90 34 L108 42 L126 29 L144 36 L162 17 L180 29 L198 22 L216 34 L234 14 L252 23 L270 11 L300 19 L300 78 L0 78Z"/><path class="pulse-line" d="M0 64 L18 60 L36 63 L54 43 L72 50 L90 34 L108 42 L126 29 L144 36 L162 17 L180 29 L198 22 L216 34 L234 14 L252 23 L270 11 L300 19"/></svg><span class="pulse-caption">Passenger demand</span></div>
+            <div class="event-row"><span class="event-icon">◷</span><div><b id="event-title">Morning commute</b><small id="event-copy">The city is starting its day.</small></div><span class="event-state">ACTIVE</span></div>
+          </section>
+
+          <section class="control-card">
+            <div class="panel-head"><span class="eyebrow">SIMULATION CONTROL</span><span class="clock-icon">◷</span></div>
+            <div class="playback-row">
+              <button id="pause-button" class="pause-button" type="button"><span>Ⅱ</span> Pause</button>
+              <div class="speed-control" aria-label="Simulation speed">
+                <button data-speed="1" class="speed-button active" type="button">1×</button>
+                <button data-speed="2" class="speed-button" type="button">2×</button>
+                <button data-speed="3" class="speed-button" type="button">3×</button>
+              </div>
+            </div>
+            <p class="control-footnote">The city keeps moving while you plan. Pause to rethink a busy network.</p>
+          </section>
+
+          <section class="tip-card">
+            <span class="tip-icon">✳</span>
+            <div><span class="eyebrow">DISPATCH NOTE</span><p id="tip-text">A station connected to several lines can become a powerful interchange. Keep an eye on its queue.</p></div>
+          </section>
+          <footer class="side-footer"><span>CITYFLOW <b>0.1.0</b></span><span>BUILT FOR CLEAR THINKING</span></footer>
+        </aside>
+      </main>
+      <div class="bottom-credit"><span>AN ORIGINAL TRANSIT STRATEGY PROTOTYPE</span><span>PORT AZURE · EST. 2026</span></div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
