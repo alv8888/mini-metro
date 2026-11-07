@@ -295,3 +295,21 @@ body {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
+
+
+/* Economy layer */
+.finance-badge {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 13px; padding: 10px 11px;
+  border: 1px solid #e2e9dd; border-radius: 7px;
+  background: linear-gradient(110deg,#f0f5ec,#f8f8f1);
+}
+.finance-badge span { color: #8b9a8e; font: 8px var(--mono); letter-spacing: .09em; }
+.finance-badge strong { margin-left: auto; color: #557e61; font: 700 18px 'Manrope',sans-serif; letter-spacing: -.04em; }
+.finance-badge small { color: #9aa69a; font-size: 8px; }
+.upgrade-cost { min-width: 30px; width: auto; height: 25px; padding: 0 6px; border-radius: 6px; font: 700 9px var(--mono); }
+.upgrade-card.maxed .upgrade-cost { background: #eceee8; color: #9ca69d; }
+@media (max-width: 560px) {
+  .finance-badge { flex-wrap: wrap; }
+  .finance-badge small { width: 100%; }
+}
