@@ -2,7 +2,7 @@ import './style.css';
 import { drawCityOverlay } from './visuals';
 
 type StationKind = 'residential' | 'commerce' | 'culture' | 'civic' | 'leisure';
-type Passenger = { id: number; destination: string; route: string[] };
+type Passenger = { id: number; origin: string; destination: string; route: string[] };
 type Station = {
   id: string; name: string; x: number; y: number; kind: StationKind;
   queue: Passenger[]; overload: number;
@@ -20,11 +20,11 @@ const WORLD_W = 1200;
 const WORLD_H = 760;
 const COLORS = ['#e47762', '#5d92bd', '#6a9c81', '#d5a14e'];
 const SHIFT_PHASES = [
-  { start: 0, end: 70, name: 'Morning setup', objective: 'Connect two districts and get the first passengers moving.' },
-  { start: 70, end: 100, name: 'Event preparation', objective: 'Grand Stadium demand is approaching. Connect it before kickoff.' },
-  { start: 100, end: 160, name: 'Stadium rush', objective: 'Demand is surging at the arena. Watch queues in the east.' },
-  { start: 160, end: 205, name: 'Return wave', objective: 'The event has ended. Connect the stadium to residential districts for the journey home.' },
-  { start: 205, end: 320, name: 'Evening commute', objective: 'Afternoon traffic is building. Keep commuter routes balanced for the evening peak.' },
+  { start: 0, end: 70, name: 'Morning setup', objective: 'Build your first service and deliver five passengers.', goal: 'Deliver 5 passengers' },
+  { start: 70, end: 100, name: 'Event preparation', objective: 'Connect Grand Stadium before the crowd arrives.', goal: 'Connect Grand Stadium to a metro line' },
+  { start: 100, end: 160, name: 'Stadium rush', objective: 'Bring at least five passengers to the stadium.', goal: 'Deliver 5 passengers to Grand Stadium' },
+  { start: 160, end: 205, name: 'Return wave', objective: 'Carry at least five passengers away from the stadium.', goal: 'Deliver 5 passengers from Grand Stadium' },
+  { start: 205, end: 320, name: 'Evening commute', objective: 'Keep the city moving and reach 55 total deliveries.', goal: 'Deliver 55 passengers in total' },
 ];
 const canvas = document.querySelector<HTMLCanvasElement>('#game-canvas')!;
 const ctx = canvas.getContext('2d')!;
@@ -59,6 +59,20 @@ let elapsed = 0;
 let demandClock = 0;
 let score = 0;
 let credits = 28;
+let stadiumArrivalsDelivered = 0;
+let stadiumDeparturesDelivered = 0;
+const completedPhaseObjectives = new Set<number>();
+const BEST_SCORE_KEY = 'cityflow.bestScore.v1';
+function readBestScore(): number {
+  try {
+    const stored = Number(localStorage.getItem(BEST_SCORE_KEY) ?? 0);
+    return Number.isFinite(stored) && stored > 0 ? Math.floor(stored) : 0;
+  } catch {
+    return 0;
+  }
+}
+let bestScore = readBestScore();
+const PHASE_REWARD = 8;
 let paused = false;
 let simulationSpeed = 1;
 let capacityLevel = 1;
@@ -306,7 +320,7 @@ function spawnPassenger(): void {
     roll -= item.weight;
     if (roll <= 0) { selected = item.choice; break; }
   }
-  selected.from.queue.push({ id: passengerId++, destination: selected.to.id, route: selected.route });
+  selected.from.queue.push({ id: passengerId++, origin: selected.from.id, destination: selected.to.id, route: selected.route });
 }
 
 function boardPassengers(line: MetroLine, train: Train, station: Station): void {
@@ -328,6 +342,8 @@ function arriveAtStation(line: MetroLine, train: Train, station: Station): void 
     if (passenger.destination === station.id || passenger.route.length <= 1) {
       score += 1;
       credits += 2;
+      if (passenger.destination === 'stadium') stadiumArrivalsDelivered += 1;
+      if (passenger.origin === 'stadium' && passenger.destination === station.id) stadiumDeparturesDelivered += 1;
       continue;
     }
     const next = nextTrainStop(line, train);
@@ -423,7 +439,15 @@ function endGame(station: Station): void {
   gameOver = true;
   paused = true;
   $('#game-over-copy').textContent = `${station.name} stayed overcrowded for too long. The city needs more capacity or a better connection.`;
+  const newRecord = score > bestScore;
+  if (newRecord) {
+    bestScore = score;
+    try { localStorage.setItem(BEST_SCORE_KEY, String(bestScore)); } catch { /* Score remains available for this session. */ }
+  }
   $('#final-score').textContent = String(score).padStart(3, '0');
+  $('#final-best').textContent = String(bestScore).padStart(3, '0');
+  $('#final-phases').textContent = `${completedPhaseObjectives.size} / 5`;
+  $('#record-state').textContent = newRecord ? 'NEW PERSONAL BEST' : `PERSONAL BEST · ${String(bestScore).padStart(3, '0')}`;
   $('#game-over').classList.remove('hidden');
   $('#pause-button').innerHTML = '<span>▶</span> Resume';
   $('#map-status').textContent = 'SERVICE INTERRUPTED · NETWORK OVERLOAD';
@@ -732,15 +756,44 @@ function render(): void {
   }
 }
 
-function updateHUD(): void {
-  $('#score').textContent = String(score).padStart(3, '0');
-  const phaseIndex = SHIFT_PHASES.findIndex((phase, index) => elapsed >= phase.start && (elapsed < phase.end || index === SHIFT_PHASES.length - 1));
-  const phase = SHIFT_PHASES[Math.max(0, phaseIndex)]!;
-  const phaseProgress = phase.end > phase.start ? Math.min(100, ((elapsed - phase.start) / (phase.end - phase.start)) * 100) : 100;
+function getPhaseGoal(index: number): { current: number; target: number } {
+  switch (index) {
+    case 0: return { current: score, target: 5 };
+    case 1: return { current: lines.some((line) => line.stations.includes('stadium')) ? 1 : 0, target: 1 };
+    case 2: return { current: stadiumArrivalsDelivered, target: 5 };
+    case 3: return { current: stadiumDeparturesDelivered, target: 5 };
+    default: return { current: score, target: 55 };
+  }
+}
+
+function updatePhaseMission(phaseIndex: number): void {
+  const phase = SHIFT_PHASES[phaseIndex]!;
+  const goal = getPhaseGoal(phaseIndex);
+  const completed = completedPhaseObjectives.has(phaseIndex);
+  const nowComplete = goal.current >= goal.target;
+  if (!completed && nowComplete && gameStarted && !gameOver) {
+    completedPhaseObjectives.add(phaseIndex);
+    credits += PHASE_REWARD;
+    $('#map-status').textContent = `PHASE GOAL COMPLETE · +${PHASE_REWARD} REWARD`;
+  }
+  const claimed = completedPhaseObjectives.has(phaseIndex);
   $('#phase-name').textContent = phase.name;
   $('#phase-objective').textContent = phase.objective;
-  $('#phase-progress').setAttribute('style', `width:${phaseProgress}%`);
-  $('#phase-count').textContent = `PHASE ${String(Math.max(0, phaseIndex) + 1).padStart(2, '0')} / 05`;
+  $('#phase-goal').textContent = phase.goal;
+  $('#phase-state').textContent = claimed ? 'CLEARED' : 'IN PROGRESS';
+  $('#phase-state').classList.toggle('is-complete', claimed);
+  $('#phase-progress').setAttribute('style', `width:${Math.min(100, (Math.max(0, elapsed - phase.start) / (phase.end - phase.start)) * 100)}%`);
+  $('#phase-count').textContent = `PHASE ${String(phaseIndex + 1).padStart(2, '0')} / 05`;
+  $('#mission-progress-label').textContent = `${Math.min(goal.current, goal.target)} / ${goal.target}`;
+  $('#mission-progress-bar').setAttribute('style', `width:${Math.min(100, (goal.current / goal.target) * 100)}%`);
+  $('#mission-reward').textContent = claimed ? 'REWARD CLAIMED' : `REWARD +${PHASE_REWARD}`;
+}
+
+function updateHUD(): void {
+  $('#score').textContent = String(score).padStart(3, '0');
+  $('#best-score').textContent = String(bestScore).padStart(3, '0');
+  const phaseIndex = Math.max(0, SHIFT_PHASES.findIndex((phase, index) => elapsed >= phase.start && (elapsed < phase.end || index === SHIFT_PHASES.length - 1)));
+  updatePhaseMission(phaseIndex);
   $('#in-transit').textContent = String(totalOnTrains());
   $('#waiting').textContent = String(totalWaiting());
   $('#active-lines').textContent = `${activeLines()} / 4`;
@@ -912,6 +965,9 @@ function restartGame(): void {
   demandClock = 0;
   score = 0;
   credits = 28;
+  stadiumArrivalsDelivered = 0;
+  stadiumDeparturesDelivered = 0;
+  completedPhaseObjectives.clear();
   paused = false;
   simulationSpeed = 1;
   capacityLevel = 1;

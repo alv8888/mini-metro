@@ -665,3 +665,28 @@ h1 { font-size: clamp(34px,3.3vw,46px); }
   .map-mode-button { min-width:120px; }
   .map-status { font-size:6px; }
 }
+
+
+/* CITYFLOW 0.7 — phase missions, rewards and session records */
+.mission-goal-row { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:10px; }
+.mission-goal-row > span:first-child { color:#526c59; font-size:10px; font-weight:700; line-height:1.4; }
+.mission-goal-row > span:last-child { flex:none; color:#ad9161; font:8px var(--mono); letter-spacing:.06em; }
+#phase-state.is-complete { color:#628d6b; }
+.mission-track { height:5px; margin-top:7px; overflow:hidden; border-radius:8px; background:#e4eae0; }
+.mission-track i { display:block; width:0; height:100%; border-radius:inherit; background:linear-gradient(90deg,#e5b86f,#8caf8b); transition:width .2s ease; }
+.mission-meta { display:flex; justify-content:space-between; margin-top:6px; color:#8e9d8f; font:8px var(--mono); letter-spacing:.04em; }
+#mission-reward { color:#718d75; }
+.best-score-row { display:flex; align-items:center; justify-content:space-between; margin-top:12px; padding:0 1px; }
+.best-score-row span { color:#8fa997; font:8px var(--mono); letter-spacing:.1em; }
+.best-score-row strong { color:#c9dfbd; font:700 13px 'Manrope',sans-serif; font-variant-numeric:tabular-nums; }
+.report-stats { display:grid; grid-template-columns:1fr 1fr; gap:9px; margin:0 0 14px; }
+.report-stats > div { display:flex; flex-direction:column; gap:5px; padding:10px; border:1px solid #e7ebe3; border-radius:7px; background:#f6f8f2; }
+.report-stats span { color:#91a095; font:8px var(--mono); letter-spacing:.06em; }
+.report-stats strong { color:#40594a; font:700 18px 'Manrope',sans-serif; font-variant-numeric:tabular-nums; }
+.record-state { margin:0 0 12px; color:#698d70; font:8px var(--mono); letter-spacing:.08em; }
+@media(max-width:560px) {
+  .mission-goal-row { align-items:flex-start; }
+  .mission-goal-row > span:first-child { max-width:70%; font-size:9px; }
+  .mission-meta { font-size:7px; }
+  .report-stats > div { padding:8px; }
+}

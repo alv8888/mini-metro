@@ -16,7 +16,7 @@
             <a class="menu-brand" href="#" aria-label="CITYFLOW home">
               <span class="brand-mark"><i></i><i></i><i></i></span>
               <span>CITYFLOW</span>
-              <span class="menu-version">0.6</span>
+              <span class="menu-version">0.7</span>
             </a>
             <div class="menu-nav-meta">
               <span class="menu-online"><i></i> PLAYABLE CITY SIMULATOR</span>
@@ -127,7 +127,7 @@
               <article class="menu-feature"><span class="feature-number">03</span><div><b>Adapt your network</b><p>Earn funds by delivering passengers. Add trains, improve capacity or speed when the network needs it.</p></div></article>
             </div>
           </section>
-          <footer class="menu-footer"><span>AN ORIGINAL TRANSIT STRATEGY GAME</span><span>PORT AZURE · BUILD 0.6.0</span></footer>
+          <footer class="menu-footer"><span>AN ORIGINAL TRANSIT STRATEGY GAME</span><span>PORT AZURE · BUILD 0.7.0</span></footer>
         </div>
       </section>
 
@@ -173,6 +173,8 @@
                   <h2>The network<br/><em>needs a rethink.</em></h2>
                   <p id="game-over-copy">The city became too crowded to keep moving.</p>
                   <div class="final-score"><span>PASSENGERS DELIVERED</span><strong id="final-score">0</strong></div>
+                  <div class="report-stats"><div><span>PERSONAL BEST</span><strong id="final-best">000</strong></div><div><span>PHASE GOALS</span><strong id="final-phases">0 / 5</strong></div></div>
+                  <p id="record-state" class="record-state">PERSONAL BEST · 000</p>
                   <button id="restart-button" class="primary-button" type="button">Start a new city <span>↗</span></button>
                 </div>
               </div>
@@ -231,6 +233,7 @@
           <section class="score-card">
             <div class="panel-head"><span class="eyebrow">CITY PERFORMANCE</span><span class="status-pill"><i></i> OPERATING</span></div>
             <div class="score-main"><span>PEOPLE DELIVERED</span><strong id="score">000</strong><small>passengers this session</small></div>
+            <div class="best-score-row"><span>PERSONAL BEST</span><strong id="best-score">000</strong></div>
             <div class="finance-badge"><span>OPERATING FUNDS</span><strong id="credits">$28</strong><small>+$2 per passenger delivered</small></div>
             <div class="stat-grid">
               <div><span>IN TRANSIT</span><strong id="in-transit">0</strong></div>
@@ -248,7 +251,7 @@
           <section class="traffic-card">
             <div class="panel-head"><span class="eyebrow">CITY PULSE</span><span class="pulse-time">LIVE</span></div>
             <div class="pulse-visual" aria-hidden="true"><div class="pulse-grid"></div><svg viewBox="0 0 300 78" preserveAspectRatio="none"><path class="pulse-area" d="M0 64 L18 60 L36 63 L54 43 L72 50 L90 34 L108 42 L126 29 L144 36 L162 17 L180 29 L198 22 L216 34 L234 14 L252 23 L270 11 L300 19 L300 78 L0 78Z"/><path class="pulse-line" d="M0 64 L18 60 L36 63 L54 43 L72 50 L90 34 L108 42 L126 29 L144 36 L162 17 L180 29 L198 22 L216 34 L234 14 L252 23 L270 11 L300 19"/></svg><span class="pulse-caption">Passenger demand</span></div>
-            <div class="phase-panel"><div class="phase-heading"><span class="eyebrow">SHIFT PROGRESSION</span><span id="phase-count">PHASE 01 / 05</span></div><strong id="phase-name">Morning setup</strong><div class="phase-track"><i id="phase-progress"></i></div><small id="phase-objective">Connect two districts and get the first passengers moving.</small></div>
+            <div class="phase-panel"><div class="phase-heading"><span class="eyebrow">SHIFT PROGRESSION</span><span id="phase-count">PHASE 01 / 05</span></div><strong id="phase-name">Morning setup</strong><div class="phase-track"><i id="phase-progress"></i></div><small id="phase-objective">Build your first service and deliver five passengers.</small><div class="mission-goal-row"><span id="phase-goal">Deliver 5 passengers</span><span id="phase-state">IN PROGRESS</span></div><div class="mission-track"><i id="mission-progress-bar"></i></div><div class="mission-meta"><span id="mission-progress-label">0 / 5</span><span id="mission-reward">REWARD +$8</span></div></div>
             <div class="event-row"><span class="event-icon">◷</span><div><b id="event-title">Morning commute</b><small id="event-copy">The city is starting its day.</small></div><span class="event-state">ACTIVE</span></div>
           </section>
 
@@ -279,10 +282,10 @@
             <p id="station-advice">Click any station on the map to inspect its passenger queue, serving lines, and local demand.</p>
             <p id="tip-text" class="station-event-note">Tip: one well-connected interchange can be more useful than three isolated lines.</p>
           </section>
-          <footer class="side-footer"><span>CITYFLOW <b>0.6.0</b></span><span>BUILT FOR CLEAR THINKING</span></footer>
+          <footer class="side-footer"><span>CITYFLOW <b>0.7.0</b></span><span>BUILT FOR CLEAR THINKING</span></footer>
         </aside>
       </main>
-      <div class="bottom-credit"><span>AN ORIGINAL TRANSIT STRATEGY PROTOTYPE</span><span>PORT AZURE · BUILD 0.6.0</span></div>
+      <div class="bottom-credit"><span>AN ORIGINAL TRANSIT STRATEGY PROTOTYPE</span><span>PORT AZURE · BUILD 0.7.0</span></div>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>

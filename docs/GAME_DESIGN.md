@@ -34,13 +34,13 @@ Observe demand → draw or adjust routes → move passengers → detect bottlene
 - Optional original synthesized ambient audio (no Spotify dependency).
 - Responsive interface and keyboard pause control.
 
-## Current release — v0.6.0 — First-shift onboarding and coherent phase timing
+## Current release — v0.7.0 — Phase objectives and session records
 
-- The first shift clock stays at 08:00 until the player connects a first route.
-- The map onboarding hint now changes after the first station, clearly prompting the second connection, and reappears when an unused line is selected.
-- The city clock advances at a rate that better matches the five shift phases.
-- The stadium return phase now weights passenger trips outward from Grand Stadium instead of only changing the label.
-- Added phase-specific guidance and improved touch targets, mobile spacing, and start-screen hierarchy.
+- Every shift phase now has a measurable goal, live progress, and a one-time $8 reward.
+- Goals cover first deliveries, connecting the stadium, stadium arrivals, stadium departures, and a total delivery target.
+- Passengers retain their origin station so return trips can be counted correctly after route transfers.
+- The end-of-shift report shows goals completed, current score, and personal best.
+- Personal best is stored locally in the browser; no account or server is required.
 
 ## Previous release — v0.4.1 — Safer map interaction
 
