@@ -690,3 +690,93 @@ h1 { font-size: clamp(34px,3.3vw,46px); }
   .mission-meta { font-size:7px; }
   .report-stats > div { padding:8px; }
 }
+
+
+
+/* CITYFLOW 0.8 — map-first visual refresh, calmer hierarchy and phase preview */
+:root { --surface:#fffefa; --surface-soft:#f5f7f1; --ink-strong:#243a31; --ink-soft:#718278; --border-soft:#d9e3d7; }
+html { background:#edf1e9; }
+body { background:radial-gradient(ellipse at 6% 8%,rgba(174,202,174,.34),transparent 28%),radial-gradient(ellipse at 95% 25%,rgba(189,211,203,.35),transparent 30%),linear-gradient(180deg,#f1f3ed 0%,#e9eee7 100%); }
+#app { max-width:1760px; padding:0 52px 34px; }
+.topbar { min-height:78px; border-bottom:1px solid rgba(199,213,199,.85); background:rgba(244,247,240,.82); }
+.layout { grid-template-columns:minmax(0,1fr) 330px; gap:26px; padding-top:34px; }
+.intro-row { align-items:center; margin-bottom:20px; }
+.intro-row h1 { font-size:clamp(36px,3.5vw,48px); }
+.subtitle { margin-top:6px; font-size:14px; }
+.game-frame { border:1px solid #d3dfd3; border-radius:16px; background:#e7ede5; box-shadow:0 20px 55px rgba(42,66,47,.11),0 3px 10px rgba(42,66,47,.045); }
+.map-topline,.map-footer { background:linear-gradient(180deg,#fffefa,#f4f7f0); }
+.canvas-wrap { background:#e7ede5; }
+#game-canvas { filter:saturate(1.03) contrast(1.025); }
+.map-hint { left:18px; bottom:17px; gap:12px; padding:12px 15px; border:1px solid #d5e2d3; border-radius:11px; background:rgba(255,255,250,.96); box-shadow:0 12px 32px rgba(40,64,46,.15); }
+.hint-number { width:32px; height:32px; border-radius:9px; }
+.map-hint strong { font-size:12px; }
+.map-hint small { font-size:10px; }
+.control-dock { margin-top:17px; padding:17px 18px; border:1px solid #d9e3d7; border-radius:13px; background:rgba(255,255,250,.94); box-shadow:0 8px 26px rgba(42,66,47,.055); }
+.dock-heading { margin-bottom:12px; }
+.line-picker { gap:9px; }
+.line-swatch { min-width:72px; min-height:42px; border-radius:9px; background:#fffefa; }
+.dock-actions { gap:15px; }
+.upgrade-strip { margin-top:17px; gap:11px; }
+.upgrade-title { padding:0 2px 2px; }
+.upgrade-card { min-height:66px; padding:12px; border:1px solid #dce5d9; border-radius:11px; background:linear-gradient(145deg,#fffefa,#f4f7ef); }
+.upgrade-copy b { font-size:11px; }
+.upgrade-copy small { font-size:9px; line-height:1.4; }
+.side-panel { gap:14px; padding-top:0; }
+.score-card,.traffic-card,.control-card,.station-card { border-radius:14px; box-shadow:0 9px 28px rgba(42,66,47,.055); }
+.score-card { padding:19px; }
+.traffic-card,.control-card,.station-card { padding:17px; }
+.score-main { margin-top:20px; }
+.score-main strong { font-size:46px; }
+.phase-panel { margin:13px 0 11px; padding:15px; border:1px solid #dbe5d7; border-radius:11px; background:linear-gradient(145deg,#f3f7ef,#edf3e9); }
+.phase-heading .eyebrow { color:#77917d; font-size:8px; }
+.phase-heading > span:last-child { padding:4px 6px; border-radius:4px; background:#e2ebdf; color:#5e8068; }
+.phase-panel > strong { margin-top:10px; color:#355744; font-size:15px; }
+.phase-panel > small { color:#718477; font-size:10px; line-height:1.55; }
+.phase-track,.mission-track { height:6px; background:#dfe8dc; }
+.mission-goal-row { margin-top:12px; }
+.mission-goal-row > span:first-child { color:#405d49; font-size:10px; }
+.mission-meta { margin-top:8px; }
+.station-card { padding:18px; }
+.station-card > p { font-size:10px; line-height:1.6; }
+.pause-button { min-height:42px; border-radius:8px; }
+.speed-control { border-radius:8px; }
+.speed-button { width:36px; height:34px; }
+.bottom-credit { margin-top:32px; }
+.menu-map-window { transform:none; box-shadow:0 28px 75px rgba(5,16,12,.34); }
+.menu-art-wrap { padding-left:0; }
+.menu-hero { gap:clamp(32px,5vw,76px); }
+.menu-copy h1 { font-size:clamp(50px,5.5vw,80px); line-height:1.01; }
+.menu-lead { max-width:500px; font-size:15px; line-height:1.8; }
+.menu-play-button { min-width:270px; min-height:68px; border-radius:11px; }
+.menu-actions { gap:20px; }
+.menu-feature { min-height:120px; padding:19px; border-color:rgba(218,232,216,.17); border-radius:12px; background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.025)); }
+.menu-feature b { font-size:12px; }
+.menu-feature p { font-size:10px; line-height:1.7; }
+.menu-phase-preview { padding:20px 0 23px; border-top:1px solid rgba(218,232,216,.13); }
+.phase-preview-heading { display:flex; align-items:baseline; gap:18px; margin-bottom:13px; }
+.phase-preview-heading > span { color:#a6c9a6; font:9px var(--mono); letter-spacing:.14em; }
+.phase-preview-heading p { margin:0; color:#e0e8dc; font:600 13px 'Manrope',sans-serif; }
+.phase-preview-grid { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:9px; }
+.phase-preview-grid article { min-height:92px; padding:13px 12px; border:1px solid rgba(218,232,216,.13); border-radius:9px; background:rgba(255,255,255,.035); }
+.phase-preview-grid article > span,.phase-preview-grid b,.phase-preview-grid small { display:block; }
+.phase-preview-grid article > span { color:#91aa96; font:8px var(--mono); letter-spacing:.04em; }
+.phase-preview-grid b { margin-top:8px; color:#e5eee1; font:700 10px 'Manrope',sans-serif; }
+.phase-preview-grid small { margin-top:5px; color:#92a797; font-size:8px; line-height:1.5; }
+.phase-preview-grid article:nth-child(3) { border-color:rgba(228,119,98,.32); background:rgba(228,119,98,.055); }
+@media (max-width:1180px) { #app { padding-right:28px; padding-left:28px; } .layout { grid-template-columns:minmax(0,1fr) 300px; gap:18px; } .phase-preview-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+@media (max-width:900px) { .layout { grid-template-columns:1fr; } .side-panel { position:static; max-height:none; overflow:visible; } .phase-preview-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .phase-preview-grid article:last-child { grid-column:1/-1; } }
+@media (max-width:620px) {
+  #app { padding:0 11px 20px; } .topbar { min-height:62px; } .layout { padding-top:20px; gap:17px; }
+  .intro-row h1 { font-size:31px; } .subtitle { font-size:11px; } .game-frame { border-radius:11px; }
+  .map-hint { left:8px; bottom:8px; padding:8px 9px; gap:8px; } .control-dock { padding:12px; }
+  .line-picker { gap:5px; } .line-swatch { min-height:39px; } .side-panel { gap:11px; }
+  .score-card,.traffic-card,.control-card,.station-card { border-radius:11px; } .phase-panel { padding:12px; }
+  .menu-shell { padding:0 16px 18px; } .menu-hero { padding:31px 0 29px; gap:25px; }
+  .menu-copy h1 { font-size:clamp(42px,11.5vw,58px); } .menu-lead { font-size:12px; line-height:1.7; }
+  .menu-map-window { border-radius:11px; } .menu-feature-grid { gap:8px; } .menu-feature { min-height:0; padding:14px; }
+  .phase-preview-heading { align-items:flex-start; flex-direction:column; gap:6px; } .phase-preview-heading p { font-size:12px; }
+  .phase-preview-grid { gap:7px; } .phase-preview-grid article { min-height:90px; padding:10px; }
+  .phase-preview-grid b { font-size:9px; } .phase-preview-grid small { font-size:8px; }
+}
+@media (max-width:360px) { .phase-preview-grid { grid-template-columns:1fr; } .phase-preview-grid article:last-child { grid-column:auto; } }
+@media (prefers-reduced-motion:reduce) { .menu-feature,.menu-play-button,.upgrade-card,.line-swatch { transition:none; } }

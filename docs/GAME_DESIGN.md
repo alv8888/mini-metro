@@ -1,3 +1,10 @@
+## Current release — v0.8.0 — Interface and phase presentation
+
+- Reworked the menu and in-game visual hierarchy for more comfortable reading and clearer actions.
+- Added a five-stage overview to the start screen, matching the in-game shift progression.
+- Increased map prominence and improved contrast and spacing across controls, dashboard cards, and mission tracking.
+- Refined responsive layouts for desktop, tablet, and mobile widths.
+
 # CITYFLOW — Game Design Document
 
 ## Product vision

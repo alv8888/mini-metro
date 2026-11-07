@@ -71,3 +71,10 @@ The project deliberately starts without accounts, a backend, or external music s
 ## License and assets
 
 The prototype uses original code and procedurally drawn graphics/audio. No Mini Metro or Mini Motorways code, artwork, audio, or other assets are included.
+
+
+## v0.8.0 — Interface and phase presentation
+
+- Refined the main menu and gameplay dashboard with clearer spacing, contrast, card hierarchy, and map-first emphasis.
+- Added a five-phase preview to the opening screen so players know what changes during a shift.
+- Improved the readability of phase objectives, progress bars, route controls, and responsive layouts.
